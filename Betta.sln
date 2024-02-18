@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BettaLib", "BettaLib\BettaLib.csproj", "{3F02487D-5F32-4103-87C2-6BF02D2B3D94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BettaConsoleUI", "BettaConsoleUI\BettaConsoleUI.csproj", "{8B845CCD-97B3-4B6C-BF49-544D8A4AA36F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F02487D-5F32-4103-87C2-6BF02D2B3D94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F02487D-5F32-4103-87C2-6BF02D2B3D94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F02487D-5F32-4103-87C2-6BF02D2B3D94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F02487D-5F32-4103-87C2-6BF02D2B3D94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B845CCD-97B3-4B6C-BF49-544D8A4AA36F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B845CCD-97B3-4B6C-BF49-544D8A4AA36F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B845CCD-97B3-4B6C-BF49-544D8A4AA36F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B845CCD-97B3-4B6C-BF49-544D8A4AA36F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5BDB34E2-6B30-4618-8268-2D1835EF3F68}
+	EndGlobalSection
+EndGlobal
