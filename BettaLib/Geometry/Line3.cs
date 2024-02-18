@@ -12,8 +12,17 @@ namespace BettaLib.Geometry
         public Point3 Start;
         public Point3 End;
 
-
         // Constructors
+        public Line3(Point3 start, Vector3 direction, double length)
+        {
+            Start = start;
+            End = start + direction * length;
+        }
+        public Line3(double x1, double y1, double z1, double x2, double y2, double z2)
+        {
+            Start = new Point3(x1, y1, z1);
+            End = new Point3(x2, y2, z2);
+        }
         public Line3(Point3 start, Point3 end)
         {
             Start = start;

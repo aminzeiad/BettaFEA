@@ -14,6 +14,7 @@ namespace BettaLib.Geometry
         public double Z;
 
         // Constructors
+        public Vector3() { X = 0; Y = 0; Z = 0; }
         public Vector3(double x, double y, double z)
         {
             X = x;
