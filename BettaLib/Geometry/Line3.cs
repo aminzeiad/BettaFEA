@@ -60,7 +60,7 @@ namespace BettaLib.Geometry
         public static bool Intersect(Line3 l1, Line3 l2, out Point3 intPt, double tollerance)
         {
             bool intersects = false;
-            bool isOnLines = false;
+            //bool isOnLines = false;
 
             Vector3 a = new Vector3(l1.From);
             Vector3 b = new Vector3(l1.To);

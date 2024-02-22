@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BettaLib.Elements
 {
-    internal class Element
+    public class LoadElemental
     {
     }
 }
