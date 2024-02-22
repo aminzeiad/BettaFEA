@@ -57,12 +57,13 @@ namespace BettaLib.Geometry
             return Start.DistanceTo(p) <= tollerance || End.DistanceTo(p) <= tollerance;
         }
 
-        public static bool Intersect(Line3 l1, Line3 l2, out Point3 intPt, double tollerance)
+        public static (bool success, double t1, double t2, Point3 p1, Point3 p2) Intersect(Line3 l1, Line3 l2, double tollerance)
         {
-            bool intersects = false;
             //bool isOnLines = false;
 
-            Vector3 a = new Vector3(l1.From);
+            (bool success, double t1, double t2, Point3 p1, Point3 p2) result = (false, 0, 0, new Point3(0, 0, 0), new Point3(0, 0, 0));
+
+           Vector3 a = new Vector3(l1.From);
             Vector3 b = new Vector3(l1.To);
             Vector3 c = new Vector3(l2.From);
             Vector3 d = new Vector3(l2.To);
@@ -80,21 +81,19 @@ namespace BettaLib.Geometry
             double denom = dotrr * dotss - dotrs * dotrs;
             double numer = dotqs * dotrs - dotqr * dotss;
 
-            double t = numer / denom;
-            double u = (dotqs + t * dotrs) / dotss;
+            result.t1 = numer / denom;
 
-            // The two points of intersection
-            Vector3 p0 = a + t * r;
-            Vector3 p1 = c + u * s;
-            intPt = new Point3(p0);
+            if (result.t1 < 0.0 || result.t1 > 1.0) return result;
+            result.t2 = (dotqs + result.t1 * dotrs) / dotss;
 
-            // Is the intersection occuring along both line segments and does it intersect
-            intersects = false;
-            if ((p0 - p1).Length <= tollerance) intersects = true;
+            if (result.t2 < 0.0 || result.t2 > 1.0) return result;
 
-            if (intersects == false || !l1.IsOnLine(intPt, tollerance) || !l2.IsOnLine(intPt, tollerance)) { intersects = false; intPt = new Point3(double.NaN, double.NaN, double.NaN); }
+            result.p1 = l1.PointAt(result.t1);
+            result.p2 = l2.PointAt(result.t2);
 
-            return intersects;
+            result.success = ((result.p1 - result.p2).LengthSquared <= tollerance * tollerance);
+
+            return result;
         }
 
         public static bool IsParallelTo(Line3 l1, Line3 l2, double tollerance)

@@ -12,5 +12,11 @@ namespace BettaLib.Model
     {
         public Point3 Position;
         public object? Origin;
-}
+
+        public FENode(Point3 position, object? origin = null)
+        {
+            Position = position;
+            Origin = origin;
+        }
+    }
 }

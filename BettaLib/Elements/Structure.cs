@@ -56,5 +56,10 @@ namespace BettaLib.Elements
             model.PerformAnalysis();
             return model;
         }
+
+        public override string ToString()
+        {
+            return $"Structure with {Nodes.Count} nodes and {Beams.Count} beams";
+        }
     }
 }

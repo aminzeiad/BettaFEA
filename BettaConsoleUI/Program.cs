@@ -53,7 +53,7 @@ Console.WriteLine(cs2 + "\n");
 //Add a node to the system
 Point3 p1 = new Point3(0.0, 0.0, 0.0);
 Point3 p2 = new Point3(5.0, 0.0, 0.0);
-Point3 p3 = new Point3(2.5, 3.0, 0.0);
+Point3 p3 = new Point3(2.5, 0.0, 3.0);
 
 
 Node n1 = str.AddNode(p1);
@@ -77,6 +77,7 @@ Beam b2 = str.AddBeam(l2, cs1);
 Beam b3 = str.AddBeam(l3, cs1);
 
 Console.WriteLine(b1 + "\n");
+Console.WriteLine(b2 + "\n");
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +96,9 @@ Console.WriteLine(n2 + "\n");
 
 lc.AddPointLoad(0, 0, -200, 0, 0, 0, n3);
 
+
 Console.WriteLine(lc + "\n");
+
 
 
 
