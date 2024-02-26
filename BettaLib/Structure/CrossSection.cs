@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.Elements
+namespace BettaLib.Structure
 {
     public class CrossSection
     {
-        public String Name { get; set; }
+        public string Name { get; set; }
         public double Area { get; set; }
         public double Ixx { get; set; }
         public double Iyy { get; set; }

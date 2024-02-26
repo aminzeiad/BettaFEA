@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.Elements
+namespace BettaLib.Structure
 {
     [Flags]
     public enum Constraints

@@ -1,6 +1,7 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using BettaLib.Elements;
+using BettaLib.FEStructure;
 using BettaLib.Geometry;
+using BettaLib.Structure;
 
 
 //start the structure

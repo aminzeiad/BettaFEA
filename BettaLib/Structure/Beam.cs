@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.Elements
+namespace BettaLib.Structure
 {
     public class Beam
     {
@@ -42,7 +42,7 @@ namespace BettaLib.Elements
         //Methods
         private void Refresh()
         {
-            _vx = (Node2.Position - Node1.Position);
+            _vx = Node2.Position - Node1.Position;
             _vx.Normalize();
 
             // if (Math.Abs(_vx.Z) >= 1-Constants.Epsilon) ;
@@ -64,7 +64,7 @@ namespace BettaLib.Elements
         }
         public static bool Equals(Beam b1, Beam b2)
         {
-            return (b1.Node1 == b2.Node1 && b1.Node2 == b2.Node2) || (b1.Node1 == b2.Node2 && b1.Node2 == b2.Node1);
+            return b1.Node1 == b2.Node1 && b1.Node2 == b2.Node2 || b1.Node1 == b2.Node2 && b1.Node2 == b2.Node1;
         }
 
         //ToString

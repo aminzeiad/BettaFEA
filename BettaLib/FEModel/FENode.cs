@@ -1,12 +1,11 @@
-﻿using BettaLib.Elements;
-using BettaLib.Geometry;
+﻿using BettaLib.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.Model
+namespace BettaLib.FEModel
 {
     public class FENode
     {

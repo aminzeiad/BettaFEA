@@ -1,12 +1,11 @@
-﻿using BettaLib.Elements;
-using BettaLib.Geometry;
+﻿using BettaLib.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.Elements
+namespace BettaLib.Structure
 {
     public enum LoadType
     {
@@ -18,13 +17,13 @@ namespace BettaLib.Elements
     }
     public class LoadCase
     {
-        public String Name { get; set; }
+        public string Name { get; set; }
         public LoadType Type { get; set; }
         List<Load> Loads { get; set; } = new List<Load>();
         List<Support> Supports { get; set; } = new List<Support>();
 
-        public LoadCase(String name) => Name = name;
-        public LoadCase(String name, LoadType type) => (Name, Type) = (name, type);
+        public LoadCase(string name) => Name = name;
+        public LoadCase(string name, LoadType type) => (Name, Type) = (name, type);
 
         public void AddPointLoad(double fx, double fy, double fz, double mx, double my, double mz, Node node)
         {

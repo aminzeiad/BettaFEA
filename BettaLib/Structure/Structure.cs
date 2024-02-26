@@ -1,18 +1,19 @@
 ﻿using BettaLib.Geometry;
-using BettaLib.Model;
+using BettaLib.FEModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BettaLib.Structure;
 
-namespace BettaLib.Elements
+namespace BettaLib.Structure
 {
     public class Structure
     {
         public Structure() { }
-        public List <Node> Nodes { get; set; } = new List <Node>(); //Consider using your own NodeList class to add methods for adding and removing nodes
-        public List <Beam> Beams { get; set; } = new List<Beam>(); //Consider using your own BeamList class to add methods for adding and removing beams
+        public List<Node> Nodes { get; set; } = new List<Node>(); //Consider using your own NodeList class to add methods for adding and removing nodes
+        public List<Beam> Beams { get; set; } = new List<Beam>(); //Consider using your own BeamList class to add methods for adding and removing beams
         public LoadCase? LoadCase { get; set; }
 
         //Methods

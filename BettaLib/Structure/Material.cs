@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.Elements
+namespace BettaLib.Structure
 {
     public class Material
     {
-        public String Name { get; set; }
+        public string Name { get; set; }
         public double ElasticModulus { get; set; }
         public double PoissonRatio { get; set; }
         public double Density { get; set; }
