@@ -1,13 +1,12 @@
 ﻿using BettaLib.Geometry;
-using BettaLib.FEModel;
+using BettaLib.FEAModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BettaLib.Structure;
 
-namespace BettaLib.Structure
+namespace BettaLib.FEAStructure
 {
     public class Structure
     {

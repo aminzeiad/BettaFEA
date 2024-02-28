@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.Structure
+namespace BettaLib.Geometry
 {
-    public class Element
+    internal class Curve
     {
+        
     }
 }

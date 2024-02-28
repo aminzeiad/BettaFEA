@@ -1,4 +1,4 @@
-﻿using BettaLib.Structure;
+﻿using BettaLib.FEAStructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,7 +6,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.FEModel
+namespace BettaLib.FEAModel
 {
     public class FEBeam : FEElement
     {

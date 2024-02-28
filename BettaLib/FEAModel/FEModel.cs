@@ -1,7 +1,6 @@
-﻿using BettaLib.FEStructure;
+﻿using BettaLib.FEAStructure;
 using BettaLib.Geometry;
 using BettaLib.Global;
-using BettaLib.Structure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.FEModel
+namespace BettaLib.FEAModel
 {
     public class FEModel
     {
