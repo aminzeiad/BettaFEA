@@ -82,10 +82,9 @@ namespace BettaLib.Geometry
             double numer = dotqs * dotrs - dotqr * dotss;
 
             result.t1 = numer / denom;
-
             if (result.t1 < 0.0 || result.t1 > 1.0) return result;
-            result.t2 = (dotqs + result.t1 * dotrs) / dotss;
 
+            result.t2 = (dotqs + result.t1 * dotrs) / dotss;
             if (result.t2 < 0.0 || result.t2 > 1.0) return result;
 
             result.p1 = l1.PointAt(result.t1);

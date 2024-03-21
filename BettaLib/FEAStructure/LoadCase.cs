@@ -19,8 +19,8 @@ namespace BettaLib.FEAStructure
     {
         public string Name { get; set; }
         public LoadType Type { get; set; }
-        List<Load> Loads { get; set; } = new List<Load>();
-        List<Support> Supports { get; set; } = new List<Support>();
+        public List<Load> Loads { get; set; } = new List<Load>();
+        public List<Support> Supports { get; set; } = new List<Support>();
 
         public LoadCase(string name) => Name = name;
         public LoadCase(string name, LoadType type) => (Name, Type) = (name, type);

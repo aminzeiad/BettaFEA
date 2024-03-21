@@ -1,4 +1,4 @@
-﻿using BettaLib.Global;
+﻿using BettaLib.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;

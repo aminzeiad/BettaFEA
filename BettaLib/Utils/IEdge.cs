@@ -4,10 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BettaLib.Geometry
+namespace BettaLib.Utils
 {
-    internal class Curve
+    public interface IEdge
     {
-        
+        INode N0 { get; set; }
+        INode N1 { get; set; }
     }
 }

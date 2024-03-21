@@ -1,12 +1,13 @@
 ﻿using BettaLib.FEAStructure;
 using BettaLib.Geometry;
-using BettaLib.Global;
+using BettaLib.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using System.Numerics;
 
 namespace BettaLib.FEAModel
 {
@@ -20,27 +21,80 @@ namespace BettaLib.FEAModel
 
         public Structure Structure { get; set; }//this structure should be immutable
         public LoadCase LoadCase { get; set; } //this loadcase should be immutable
-        public List<FEBeam> feBeams { get; set; } = new();
-        public List<FENode> fENodes { get; set; } = new();
+
+        public NodeCollection<FENode> feNodes = new();
+        public EdgeCollection<FEBeam> feBeams = new();
+
         Dictionary<Node, FENode> nodeNodeMap = new();
+        double[,] GlobalStiffnessMatrix;
+        double[,] GlobalLoadMatrix;
+        double[,] GlobalDisplacementMatrix;
+        double[,] EquivalentNodalForces;
 
         public void PerformAnalysis()
         {
-            //Perform analysis
+            //Clear the model of any previous results
+
+            //Prepare the finite element model
             PrepareModel();
 
-            //
+            //Solve linear static analysis
+            SolveLinearStatic();
         }
 
+        private void SolveLinearStatic()
+        {
+            InitializeSystem();
+
+            CalculateGlobalStiffnessMatrix();
+            
+            //ApplyLoads();
+
+            //PerformStaticCondensation();
+
+            //SolveHooksLaw(); //F = K * u
+
+            //UndoStaticCondensation();
+
+            //StoreDisplacements();
+        }
+
+        private void CalculateGlobalStiffnessMatrix() 
+        {
+            foreach (FEBeam b in feBeams.Edges)
+            {
+                //b.CalculateLocalStiffnessMatrix();
+                //b.CalculateTransformationMatrix(feBeams.Count); //Depends on the local axes of the beam
+                //b.CalculateGlobalStiffnessMatrix(); //T' * K * T
+               // b.InitializeLocalEquivalentLoad();
+
+            }
+        }
+
+        private void InitializeSystem()
+        {
+            int DOF = 6;
+
+            // 1 node needs 6 DOF, 10 nodes need 60 DOF ....etc
+            int numNodes = feNodes.Nodes.Count; //Is this risky?
+            int numLoads = LoadCase.Loads.Count;
+            
+            GlobalStiffnessMatrix = new double[numNodes * DOF, numNodes * DOF];
+            GlobalLoadMatrix = new double[numNodes * DOF, 1];
+            GlobalDisplacementMatrix = new double[numNodes * DOF, 1];
+            EquivalentNodalForces = new double[numNodes * DOF, 1];
+
+        }
 
         public void PrepareModel()
         {
             List<BeamSplits> beamSplits = new List<BeamSplits>();
 
-            foreach (Beam b in Structure.Beams)
+            //Add FENodes at the start and end of each beam and use EnsureNode to avoid duplicates
+            foreach (Beam b in Structure.strBeams.Edges)
             {
-                FENode n1 = EnsureNode(b.Node1);
-                FENode n2 = EnsureNode(b.Node2);
+                FENode n1 = feNodes.EnsureNode(b.N0.Position, Constants.Epsilon);
+                FENode n2 = feNodes.EnsureNode(b.N1.Position, Constants.Epsilon);
 
 
                 beamSplits.Add(new BeamSplits(b, n1, n2));
@@ -50,17 +104,17 @@ namespace BettaLib.FEAModel
             //check for intersections
             foreach (BeamSplits b1 in beamSplits)
             {
-                Line3 l1 = new Line3(b1.beam.Node1.Position, b1.beam.Node2.Position);
+                Line3 l1 = new Line3(b1.beam.N0.Position, b1.beam.N1.Position);
                 foreach (BeamSplits b2 in beamSplits)
                 {
                     if (b1 != b2)
                     {
-                        Line3 l2 = new Line3(b2.beam.Node1.Position, b2.beam.Node2.Position);
+                        Line3 l2 = new Line3(b2.beam.N0.Position, b2.beam.N1.Position);
                         var (success, t1, t2, p1, p2) = Line3.Intersect(l1, l2, Constants.Epsilon);
                         if (success)
                         {
                             Point3 xp = (p1 + p2) * 0.5;
-                            FENode xnode = EnsureNode(xp, Constants.Epsilon);
+                            FENode xnode = feNodes.EnsureNode(xp, Constants.Epsilon);
                             XEvent? x = b1.FindEvent(xnode);
                             if (x == null)
                             {
@@ -77,54 +131,18 @@ namespace BettaLib.FEAModel
             }
 
             //split beams
+            List<FEBeam> DupFEBeams = new List<FEBeam>();
             foreach (BeamSplits bs in beamSplits)
             {
                 List<FEBeam> newBeams = bs.SplitBeam();
-                feBeams.AddRange(newBeams);
+                DupFEBeams.AddRange(newBeams);
             }
-
-
-        }
-
-
-        public FENode? FindNode(Node n)
-        {
-            if (nodeNodeMap.TryGetValue(n, out FENode feNode))
+            //Check for duplicate beams
+            foreach (FEBeam b in DupFEBeams)
             {
-                return feNode;
+                feBeams.EnsureEdge(b, Constants.Epsilon);
             }
-            return null;
         }
-
-        public FENode EnsureNode(Node n)
-        {
-            var fn = FindNode(n);
-            if (fn != null) return fn;
-            fn = new FENode(n.Position, n);
-            fENodes.Add(fn);
-            nodeNodeMap.Add(n, fn);
-            return fn;
-        }
-
-        public FENode? FindNode(Point3 p, double tol)
-        {
-            foreach (FENode n in fENodes)
-            {
-                if (p.IsEqualTo(n.Position, tol)) return n;
-            }
-            return null;
-        }
-
-        public FENode EnsureNode(Point3 p, double tol)
-        {
-            var fn = FindNode(p, tol);
-            if (fn != null) return fn;
-            fn = new FENode(p);
-            fENodes.Add(fn);
-            return fn;
-        }
-
-
 
         struct XEvent
         {
@@ -149,7 +167,7 @@ namespace BettaLib.FEAModel
             public void AddEvent(FENode n)
             {
 
-                XEvents.Add(new XEvent { t = n.Position.DistanceTo(beam.Node1.Position) / beam.Length, Node = n });
+                XEvents.Add(new XEvent { t = n.Position.DistanceTo(beam.N0.Position) / beam.Length, Node = n });
             }
 
             public void AddEvent(FENode n, double t)
@@ -181,6 +199,8 @@ namespace BettaLib.FEAModel
                 }
                 return newBeams;
             }
+
+
         }
     }
 }

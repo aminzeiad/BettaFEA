@@ -1,5 +1,5 @@
 ﻿using BettaLib.Geometry;
-using BettaLib.Global;
+using BettaLib.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace BettaLib.FEAStructure
 {
-    public class Beam
+    public class Beam : IEdge
     {
         // Fields
-        public Node Node1 { get; set; }
-        public Node Node2 { get; set; }
+        public INode N0 { get; set; }
+        public INode N1 { get; set; }
         public CrossSection CrossSection { get; set; }
-        public Point3 CG => (Node1.Position + Node2.Position) / 2.0;
+        public Point3 CG => (N0.Position + N1.Position) / 2.0;
 
         protected Vector3 _vx;
         public Vector3 vx => _vx;
@@ -25,24 +25,26 @@ namespace BettaLib.FEAStructure
         protected Vector3 _vz;
         public Vector3 vz => _vz;
 
-        public double Length => (Node2.Position - Node1.Position).Length;
+        public double Length => (N1.Position - N0.Position).Length;
 
 
 
         // Constructors
-        public Beam(Node node1, Node node2, CrossSection cs)
+        public Beam(Node n0, Node n1, CrossSection cs)
         {
-            Node1 = node1;
-            Node2 = node2;
+            N0 = n0;
+            N1 = n1;
             CrossSection = cs;
             Refresh();
         }
+
+        public Beam() { }
 
 
         //Methods
         private void Refresh()
         {
-            _vx = Node2.Position - Node1.Position;
+            _vx = N1.Position - N0.Position;
             _vx.Normalize();
 
             // if (Math.Abs(_vx.Z) >= 1-Constants.Epsilon) ;
@@ -64,13 +66,13 @@ namespace BettaLib.FEAStructure
         }
         public static bool Equals(Beam b1, Beam b2)
         {
-            return b1.Node1 == b2.Node1 && b1.Node2 == b2.Node2 || b1.Node1 == b2.Node2 && b1.Node2 == b2.Node1;
+            return b1.N0 == b2.N0 && b1.N1 == b2.N1 || b1.N0 == b2.N1 && b1.N1 == b2.N0;
         }
 
         //ToString
         public override string ToString()
         {
-            return $"Beam from {Node1} \nto {Node2}" + "\n" +
+            return $"Beam from {N0} \nto {N1}" + "\n" +
                 $"CrossSection: {CrossSection}" + "\n" +
                 $"Length: {Length}" + "\n" +
                 $"CG: {CG}" + "\n" +

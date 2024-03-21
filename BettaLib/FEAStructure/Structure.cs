@@ -5,48 +5,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BettaLib.Utils;
+using System.Xml.Linq;
 
 namespace BettaLib.FEAStructure
 {
+
     public class Structure
     {
         public Structure() { }
-        public List<Node> Nodes { get; set; } = new List<Node>(); //Consider using your own NodeList class to add methods for adding and removing nodes
-        public List<Beam> Beams { get; set; } = new List<Beam>(); //Consider using your own BeamList class to add methods for adding and removing beams
+        public NodeCollection<Node> strNodes = new();
+        public EdgeCollection<Beam> strBeams = new();
         public LoadCase? LoadCase { get; set; }
 
         //Methods
-        public Node AddNode(Point3 node)
+        public Node AddNode(Point3 p)
         {
-            //Need to add a check for duplicate nodes
-            Node n = new Node(node);
-            Nodes.Add(n);
+            Node n = strNodes.EnsureNode(p, Constants.Epsilon);
             return n;
         }
         public Node AddNode(double x, double y, double z)
         {
-            //Need to add a check for duplicate nodes
-            Node n = new Node(x, y, z);
-            Nodes.Add(n);
+            Point3 p = new Point3(x, y, z);
+            Node n = strNodes.EnsureNode(p, Constants.Epsilon);
             return n;
         }
-        public Beam AddBeam(Line3 line, CrossSection cs)
-        {
-            //Need to add a check for duplicate beams
-            //Need to check for intersection with other beams - should this be done now or 
-            Node start = AddNode(line.Start);
-            Node end = AddNode(line.End);
-            Beam b = new Beam(start, end, cs);
-            Beams.Add(b);
-            return b;
-        }
+
         public Beam AddBeam(Node start, Node end, CrossSection cs)
         {
-            //Need to add a check for duplicate beams
-            //Need to check for intersection with other beams
-
-            Beam b = new Beam(start, end, cs);
-            Beams.Add(b);
+            Beam b = strBeams.EnsureEdge(new Beam(start, end, cs), Constants.Epsilon);
             return b;
         }
 
@@ -59,7 +46,7 @@ namespace BettaLib.FEAStructure
 
         public override string ToString()
         {
-            return $"Structure with {Nodes.Count} nodes and {Beams.Count} beams";
+            return $"Structure with {strNodes.Nodes.Count} nodes and {strBeams.Edges.Count} beams";
         }
     }
 }
