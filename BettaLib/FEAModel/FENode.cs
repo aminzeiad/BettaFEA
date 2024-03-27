@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BettaLib.Utils;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace BettaLib.FEAModel
 {
@@ -17,7 +18,9 @@ namespace BettaLib.FEAModel
         //why? Becasue we want to create a spring between the master node and the slave node and we want to know which is which
         public bool IsSupportNode { get; set; } = false; //a node defined because of a support
 
-        public double[,] Deflections = new double[6, 1]; //deflections in x, y, z, rx, ry, rz
+        public Matrix<double> Deflections; //deflections in x, y, z, rx, ry, rz
+
+        public int Id { get; set; }
 
         public FENode(Point3 position, object? origin = null)
         {

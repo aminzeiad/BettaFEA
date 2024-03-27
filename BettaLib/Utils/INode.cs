@@ -11,6 +11,7 @@ namespace BettaLib.Utils
     {
 
         Point3 Position { get; set; }
+        int Id { get; set; }
 
     }
 }

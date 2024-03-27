@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
+using MathNet.Numerics.LinearAlgebra;
 
 namespace BettaLib.FEAModel
 {
@@ -25,11 +26,12 @@ namespace BettaLib.FEAModel
         public NodeCollection<FENode> feNodes = new();
         public EdgeCollection<FEBeam> feBeams = new();
 
+
         Dictionary<Node, FENode> nodeNodeMap = new();
-        double[,] GlobalStiffnessMatrix;
-        double[,] GlobalLoadMatrix;
-        double[,] GlobalDisplacementMatrix;
-        double[,] EquivalentNodalForces;
+        public Matrix<double> GlobalStiffnessMatrix { get; set; }
+        public Matrix<double> GlobalLoadMatrix { get; set; }
+        public Matrix<double> GlobalDisplacementMatrix { get; set; }
+        public Matrix<double> EquivalentNodalForces { get; set; }
 
         public void PerformAnalysis()
         {
@@ -61,13 +63,28 @@ namespace BettaLib.FEAModel
 
         private void CalculateGlobalStiffnessMatrix() 
         {
-            foreach (FEBeam b in feBeams.Edges)
+            int size = feNodes.Count * 6;
+            var K = Matrix<double>.Build.Sparse(size, size);
+            var R = MathNet.Numerics.LinearAlgebra.Vector<double>.Build.Dense(size);
+
+            int id = 0;
+            foreach(FENode n in feNodes)
             {
+                n.Id = id;
+                ++id;
+
+
+                n.FillInLoad(R);
+            }
+
+            foreach (FEBeam b in feBeams)
+            {
+                b.AssembleOnGlobalStiffnessMatrix(K);
                 //b.CalculateLocalStiffnessMatrix();
                 //b.CalculateTransformationMatrix(feBeams.Count); //Depends on the local axes of the beam
-                //b.CalculateGlobalStiffnessMatrix(); //T' * K * T
-               // b.InitializeLocalEquivalentLoad();
-
+                //b.CalculateGlobalElementalStiffnessMatrix(); //T' * K * T
+                //b.CalculateGlobalStructuralStiffnessMatrix(); //T' * K * T
+                b.InitializeLocalEquivalentLoad(R);
             }
         }
 
@@ -76,14 +93,18 @@ namespace BettaLib.FEAModel
             int DOF = 6;
 
             // 1 node needs 6 DOF, 10 nodes need 60 DOF ....etc
-            int numNodes = feNodes.Nodes.Count; //Is this risky?
+            int numNodes = feNodes.Count; 
             int numLoads = LoadCase.Loads.Count;
-            
-            GlobalStiffnessMatrix = new double[numNodes * DOF, numNodes * DOF];
-            GlobalLoadMatrix = new double[numNodes * DOF, 1];
-            GlobalDisplacementMatrix = new double[numNodes * DOF, 1];
-            EquivalentNodalForces = new double[numNodes * DOF, 1];
 
+            GlobalStiffnessMatrix = Matrix<double>.Build.Sparse(numNodes * DOF, numNodes * DOF);
+            GlobalLoadMatrix = Matrix<double>.Build.Sparse(numNodes * DOF, 1);
+            GlobalDisplacementMatrix = Matrix<double>.Build.Sparse(numNodes * DOF, 1);
+            EquivalentNodalForces = Matrix<double>.Build.Sparse(numNodes * DOF, 1);
+
+            foreach (FENode n in feNodes)
+            {
+                n.Deflections = Matrix<double>.Build.Sparse(DOF, 1);
+            }
         }
 
         public void PrepareModel()
@@ -91,7 +112,7 @@ namespace BettaLib.FEAModel
             List<BeamSplits> beamSplits = new List<BeamSplits>();
 
             //Add FENodes at the start and end of each beam and use EnsureNode to avoid duplicates
-            foreach (Beam b in Structure.strBeams.Edges)
+            foreach (Beam b in Structure.strBeams)
             {
                 FENode n1 = feNodes.EnsureNode(b.N0.Position, Constants.Epsilon);
                 FENode n2 = feNodes.EnsureNode(b.N1.Position, Constants.Epsilon);
