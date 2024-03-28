@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Numerics;
+//using System.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace BettaLib.FEAModel
@@ -38,7 +38,7 @@ namespace BettaLib.FEAModel
             //Clear the model of any previous results
 
             //Prepare the finite element model
-            PrepareModel();
+            PrepareModel(); 
 
             //Solve linear static analysis
             SolveLinearStatic();
@@ -49,8 +49,6 @@ namespace BettaLib.FEAModel
             InitializeSystem();
 
             CalculateGlobalStiffnessMatrix();
-            
-            //ApplyLoads();
 
             //PerformStaticCondensation();
 
@@ -80,11 +78,7 @@ namespace BettaLib.FEAModel
             foreach (FEBeam b in feBeams)
             {
                 b.AssembleOnGlobalStiffnessMatrix(K);
-                //b.CalculateLocalStiffnessMatrix();
-                //b.CalculateTransformationMatrix(feBeams.Count); //Depends on the local axes of the beam
-                //b.CalculateGlobalElementalStiffnessMatrix(); //T' * K * T
-                //b.CalculateGlobalStructuralStiffnessMatrix(); //T' * K * T
-                b.InitializeLocalEquivalentLoad(R);
+                //b.InitializeLocalEquivalentLoad(R); //In case the beam has a linear load on - linear load is not implemented yet
             }
         }
 
@@ -151,6 +145,21 @@ namespace BettaLib.FEAModel
                 }
             }
 
+            //apply loads
+            foreach (Load l in LoadCase.Loads)
+            {
+                if (l is LoadNodal pl)
+                {
+                    Point3 p = new Point3 (pl.NodeAppliedOn.Position.X, pl.NodeAppliedOn.Position.Y, pl.NodeAppliedOn.Position.Z);
+                    FENode n = feNodes.EnsureNode(pl.NodeAppliedOn.Position, Constants.Epsilon);
+
+                    Vector3 f = new Vector3(pl.Fx, pl.Fy, pl.Fz);
+                    Vector3 m = new Vector3(pl.Mx, pl.My, pl.Mz);
+                    n.ApplyLoad(f, m);
+                }
+                //else if (l is LinearLoad ll) //Linear load is not implemented yet
+            }
+
             //split beams
             List<FEBeam> DupFEBeams = new List<FEBeam>();
             foreach (BeamSplits bs in beamSplits)
@@ -163,6 +172,7 @@ namespace BettaLib.FEAModel
             {
                 feBeams.EnsureEdge(b, Constants.Epsilon);
             }
+
         }
 
         struct XEvent

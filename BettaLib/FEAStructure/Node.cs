@@ -16,6 +16,7 @@ namespace BettaLib.FEAStructure
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
+        public int Id { get; set; }
         public Point3 Position { get => new Point3(X, Y, Z); set { X = value.X; Y = value.Y; Z = value.Z; } }
 
         //Constructors

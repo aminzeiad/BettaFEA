@@ -10,19 +10,15 @@ using BettaLib.Utils;
 
 namespace BettaLib.FEAModel
 {
-    public interface IFEElement
+    public interface IFEElement //to make it generalizable to other elements
     {
-        void assembleOnGlobalStiffnessMatrix(Matrix<double> K);
+        void AssembleOnGlobalStiffnessMatrix(Matrix<double> K);
         int DOF { get; }
     }
     public class FEBeam : IEdge, IFEElement
     {
-        //public Matrix<double> LocalStiffnessMatrix;
-        //public Matrix<double> TransformationMatrix;
-        //public Matrix<double> GlobalElementalStiffnessMatrix;
-        //public Matrix<double> GlobalStrcuturalStiffnessMatrix;
         public Matrix<double> LocalEquivalentNodalLoad;
-        public int DOF => 12;
+        public int DOF => 12; // 6 DOF per node
 
         public INode N0 { get; set; }
 
@@ -41,7 +37,59 @@ namespace BettaLib.FEAModel
 
         protected Matrix<double> CalculateLocalStiffnessMatrix()
         {
+            //Calculating the local stiffness matrix - a 12x12 matrix with the stiffness values
+            //For a beam element, the local stiffness matrix is a 12x12 matrix, 6x6 for each node
             Matrix<double> ke = Matrix<double>.Build.Dense(DOF, DOF);
+
+            double E = Origin.CrossSection.Material.ElasticModulus;
+            double A = Origin.CrossSection.Area;
+            double G = Origin.CrossSection.Material.ShearModulus;
+            double Ixx = Origin.CrossSection.Ixx;
+            double Iyy = Origin.CrossSection.Iyy;
+            double Izz = Origin.CrossSection.Izz;
+            double J = Origin.CrossSection.J;
+            double L = Origin.Length;
+
+            ke[0, 0] = E * A / L;
+            ke[0, 6] = -E * A / L;
+            ke[1, 1] = 12 * E * Izz / Math.Pow(L, 3);
+            ke[1, 5] = 6 * E * Izz / Math.Pow(L, 2);
+            ke[1, 7] = -12 * E * Izz / Math.Pow(L, 3);
+            ke[1, 11] = 6 * E * Izz / Math.Pow(L, 2);
+            ke[2, 2] = 12 * E * Iyy / Math.Pow(L, 3);
+            ke[2, 4] = -6 * E * Iyy / Math.Pow(L, 2);
+            ke[2, 8] = -12 * E * Iyy / Math.Pow(L, 3);
+            ke[2, 10] = -6 * E * Iyy / Math.Pow(L, 2);
+            ke[3, 3] = G * J / L;
+            ke[3, 9] = -G * J / L;
+            ke[4, 2] = -6 * E * Iyy / Math.Pow(L, 2);
+            ke[4, 4] = 4 * E * Iyy / L;
+            ke[4, 8] = 6 * E * Iyy / Math.Pow(L, 2);
+            ke[4, 10] = 2 * E * Iyy / L;
+            ke[5, 1] = 6 * E * Izz / Math.Pow(L, 2);
+            ke[5, 5] = 4 * E * Izz / L;
+            ke[5, 7] = -6 * E * Izz / Math.Pow(L, 2);
+            ke[5, 11] = 2 * E * Izz / L;
+            ke[6, 0] = -E * A / L;
+            ke[6, 6] = E * A / L;
+            ke[7, 1] = -12 * E * Izz / Math.Pow(L, 3);
+            ke[7, 5] = -6 * E * Izz / Math.Pow(L, 2);
+            ke[7, 7] = 12 * E * Izz / Math.Pow(L, 3);
+            ke[7, 11] = -6 * E * Izz / Math.Pow(L, 2);
+            ke[8, 2] = -12 * E * Iyy / Math.Pow(L, 3);
+            ke[8, 4] = 6 * E * Iyy / Math.Pow(L, 2);
+            ke[8, 8] = 12 * E * Iyy / Math.Pow(L, 3);
+            ke[8, 10] = 6 * E * Iyy / Math.Pow(L, 2);
+            ke[9, 3] = -G * J / L;
+            ke[9, 9] = G * J / L;
+            ke[10, 2] = -6 * E * Iyy / Math.Pow(L, 2);
+            ke[10, 4] = 2 * E * Iyy / L;
+            ke[10, 8] = 6 * E * Iyy / Math.Pow(L, 2);
+            ke[10, 10] = 4 * E * Iyy / L;
+            ke[11, 1] = 6 * E * Izz / Math.Pow(L, 2);
+            ke[11, 5] = 2 * E * Izz / L;
+            ke[11, 7] = -6 * E * Izz / Math.Pow(L, 2);
+            ke[11, 11] = 4 * E * Izz / L;
 
 
             return ke;
@@ -50,13 +98,12 @@ namespace BettaLib.FEAModel
 
         protected Matrix<double> CalculateTransformationMatrix()
         {
-            
+            //Calculating the trasformation matrix - a 12x12 matrix with Lamda on the diagonal
             Matrix<double> T = Matrix<double>.Build.Dense(DOF, DOF);
-
-           
+            //Calculating the local coordinate system Lamda
             double[,] Lambda = new double[3, 3];
 
-            Lambda[0, 0] = Origin.vx.X; //may be null I am sure there is a better way to do this
+            Lambda[0, 0] = Origin.vx.X; //Later on we can ask the user to specify where is the local y axis instead of just assumin
             Lambda[0, 1] = Origin.vx.Y;
             Lambda[0, 2] = Origin.vx.Z;
             Lambda[1, 0] = Origin.vy.X;
@@ -66,6 +113,7 @@ namespace BettaLib.FEAModel
             Lambda[2, 1] = Origin.vz.Y;
             Lambda[2, 2] = Origin.vz.Z;
 
+            //Filling the transformation matrix with lambda in the diagonal
             T[0, 0] = Lambda[0, 0];
             T[0, 1] = Lambda[0, 1];
             T[0, 2] = Lambda[0, 2];
@@ -107,7 +155,6 @@ namespace BettaLib.FEAModel
             T[11, 11] = Lambda[2, 2];
 
             return T;
-            
         }
 
         protected Matrix<double> CalculateGlobalElementalStiffnessMatrix()
@@ -124,6 +171,7 @@ namespace BettaLib.FEAModel
         public void InitializeLocalEquivalentLoad()
         {
             LocalEquivalentNodalLoad = Matrix<double>.Build.Sparse(DOF, 1);
+
         }
 
         public void AssembleOnGlobalStiffnessMatrix(Matrix<double> K)
@@ -132,20 +180,6 @@ namespace BettaLib.FEAModel
 
             int i0 = N0.Id * 6;
             int i1 = N1.Id * 6;
-
-         
-            
-            //for(int j =0; j< 6; j++)
-            //{
-            //    for(int i = 0; i < 6; i++)
-            //    {
-            //        K[i0 + i, i0 + j] += Ke[i, j];
-            //        K[i0 + i, i1 + j] += Ke[i, j + 6];
-            //        K[i1 + i, i0 + j] += Ke[i + 6, j];
-            //        K[i1 + i, i1 + j] += Ke[i + 6, j + 6];
-            //    }
-            //}
-
 
             int[] global_dof_map = new int[12];
             for(int i = 0; i < 6; i++)

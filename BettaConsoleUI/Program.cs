@@ -68,13 +68,9 @@ Console.WriteLine(n1 + "\n");
 
 //Add beams to the system
 
-Line3 l1 = new Line3(p1, p3);
-Line3 l2 = new Line3(p3, p2);
-Line3 l3 = new Line3(p2, p1);
-
-Beam b1 = str.AddBeam(l1, cs1); //Could also be added using the nodes
-Beam b2 = str.AddBeam(l2, cs1);
-Beam b3 = str.AddBeam(l3, cs1);
+Beam b1 = str.AddBeam(n1, n2, cs1); //Could also be added using the nodes
+Beam b2 = str.AddBeam(n2, n3, cs1);
+Beam b3 = str.AddBeam(n3, n1, cs1);
 
 Console.WriteLine(b1 + "\n");
 Console.WriteLine(b2 + "\n");
@@ -94,7 +90,7 @@ Console.WriteLine(n1 + "\n");
 Console.WriteLine(n2 + "\n");
 
 
-lc.AddPointLoad(0, 0, -200, 0, 0, 0, n3);
+lc.AddPointLoad(n2, 0, 0, -200, 0, 0, 0, n3);
 
 
 Console.WriteLine(lc + "\n");

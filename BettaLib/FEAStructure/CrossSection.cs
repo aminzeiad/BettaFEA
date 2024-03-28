@@ -13,6 +13,8 @@ namespace BettaLib.FEAStructure
         public double Ixx { get; set; }
         public double Iyy { get; set; }
         public double Izz { get; set; }
+        public double J => Ixx + Iyy;
+
         public Material Material { get; set; }
 
         public CrossSection(string name, double area, double ixx, double iyy, double izz, Material material)

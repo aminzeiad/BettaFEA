@@ -46,7 +46,7 @@ namespace BettaLib.FEAStructure
 
         public override string ToString()
         {
-            return $"Structure with {strNodes.Nodes.Count} nodes and {strBeams.Edges.Count} beams";
+            return $"Structure with {strNodes.Count} nodes and {strBeams.Count} beams";
         }
     }
 }

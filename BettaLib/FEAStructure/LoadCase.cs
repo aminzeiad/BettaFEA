@@ -1,4 +1,5 @@
 ﻿using BettaLib.Geometry;
+using BettaLib.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,14 +26,14 @@ namespace BettaLib.FEAStructure
         public LoadCase(string name) => Name = name;
         public LoadCase(string name, LoadType type) => (Name, Type) = (name, type);
 
-        public void AddPointLoad(double fx, double fy, double fz, double mx, double my, double mz, Node node)
+        public void AddPointLoad(INode position, double fx, double fy, double fz, double mx, double my, double mz, Node node)
         {
-            Loads.Add(new LoadNodal(fx, fy, fz, mx, my, mz, node));
+            Loads.Add(new LoadNodal(position, fx, fy, fz, mx, my, mz, node));
         }
 
-        public void AddPointLoad(Node node, Vector3 force, Vector3 moment)
+        public void AddPointLoad(INode position, Vector3 force, Vector3 moment)
         {
-            Loads.Add(new LoadNodal(node, force, moment));
+            Loads.Add(new LoadNodal(position, force, moment));
         }
 
         public void AddSupport(Node node, Constraints constraints)

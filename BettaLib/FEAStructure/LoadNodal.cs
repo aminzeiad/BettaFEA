@@ -1,4 +1,5 @@
 ﻿using BettaLib.Geometry;
+using BettaLib.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,18 +10,18 @@ namespace BettaLib.FEAStructure
 {
     public class LoadNodal : Load
     {
-        public Node Node { get; set; }
+        public INode NodeAppliedOn { get; set; }
 
-        public LoadNodal(double fx, double fy, double fz, double mx, double my, double mz, Node node)
+        public LoadNodal(INode position, double fx, double fy, double fz, double mx, double my, double mz, Node node)
             : base(fx, fy, fz, mx, my, mz)
         {
-            Node = node;
+            NodeAppliedOn = position;
         }
 
-        public LoadNodal(Node node, Vector3 force, Vector3 moment)
+        public LoadNodal(INode position, Vector3 force, Vector3 moment)
             : base(force, moment)
         {
-            Node = node;
+            NodeAppliedOn = position;
         }
     }
 }
