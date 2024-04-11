@@ -49,5 +49,30 @@ namespace BettaLib.FEAModel
         }
 
         public FENode() { }
+
+        public String PrintForceVector()
+        {
+            return $"Node {Id} has a force of {Force}";
+        }
+
+        public String PrintMomentVector()
+        {
+            return $"Node {Id} has a moment of {Moment}";
+        }
+
+        public String PrintDisplacementVector()
+        {
+            return $"Node {Id} has a displacement of {Displacement}";
+        }
+
+        public String PrintDeflections()
+        {
+            return $"Node {Id} has deflections of {Deflections}";
+        }
+
+        public override string ToString()
+        {
+            return $"Node {Id} at {Position}";
+        }
     }
 }

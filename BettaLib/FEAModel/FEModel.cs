@@ -29,13 +29,16 @@ namespace BettaLib.FEAModel
 
         Dictionary<Node, FENode> nodeNodeMap = new();
         public Matrix<double> GlobalStiffnessMatrix { get; set; }
-        public Matrix<double> GlobalLoadMatrix { get; set; }
+        public Vector<double> GlobalLoadMatrix { get; set; }
         public Matrix<double> GlobalDisplacementMatrix { get; set; }
         public Matrix<double> EquivalentNodalForces { get; set; }
+
 
         public void PerformAnalysis()
         {
             //Clear the model of any previous results
+            feNodes.Clear();
+            feBeams.Clear();
 
             //Prepare the finite element model
             PrepareModel(); 
@@ -63,7 +66,7 @@ namespace BettaLib.FEAModel
         {
             int size = feNodes.Count * 6;
             var K = Matrix<double>.Build.Sparse(size, size);
-            var R = MathNet.Numerics.LinearAlgebra.Vector<double>.Build.Dense(size);
+            var R = Vector<double>.Build.Dense(size);
 
             int id = 0;
             foreach(FENode n in feNodes)
@@ -80,6 +83,9 @@ namespace BettaLib.FEAModel
                 b.AssembleOnGlobalStiffnessMatrix(K);
                 //b.InitializeLocalEquivalentLoad(R); //In case the beam has a linear load on - linear load is not implemented yet
             }
+
+            GlobalStiffnessMatrix = K;
+            GlobalLoadMatrix = R;
         }
 
         private void InitializeSystem()
@@ -91,7 +97,7 @@ namespace BettaLib.FEAModel
             int numLoads = LoadCase.Loads.Count;
 
             GlobalStiffnessMatrix = Matrix<double>.Build.Sparse(numNodes * DOF, numNodes * DOF);
-            GlobalLoadMatrix = Matrix<double>.Build.Sparse(numNodes * DOF, 1);
+            GlobalLoadMatrix = Vector<double>.Build.Sparse(numNodes * DOF);
             GlobalDisplacementMatrix = Matrix<double>.Build.Sparse(numNodes * DOF, 1);
             EquivalentNodalForces = Matrix<double>.Build.Sparse(numNodes * DOF, 1);
 
@@ -109,12 +115,30 @@ namespace BettaLib.FEAModel
             foreach (Beam b in Structure.strBeams)
             {
                 FENode n1 = feNodes.EnsureNode(b.N0.Position, Constants.Epsilon);
+                //I never set values for isSupportNode and Origin
+                n1.Origin = b.N0;
                 FENode n2 = feNodes.EnsureNode(b.N1.Position, Constants.Epsilon);
+                //I never set values for isSupportNode and Origin
+                n2.Origin = b.N1;
 
 
                 beamSplits.Add(new BeamSplits(b, n1, n2));
             }
 
+            //apply loads
+            foreach (Load l in LoadCase.Loads)
+            {
+                if (l is LoadNodal pl)
+                {
+                    Point3 p = new Point3(pl.NodeAppliedOn.Position.X, pl.NodeAppliedOn.Position.Y, pl.NodeAppliedOn.Position.Z);
+                    FENode n = feNodes.EnsureNode(pl.NodeAppliedOn.Position, Constants.Epsilon);
+
+                    Vector3 f = new Vector3(pl.Fx, pl.Fy, pl.Fz);
+                    Vector3 m = new Vector3(pl.Mx, pl.My, pl.Mz);
+                    n.ApplyLoad(f, m);
+                }
+                //else if (l is LinearLoad ll) //Linear load is not implemented yet
+            }
 
             //check for intersections
             foreach (BeamSplits b1 in beamSplits)
@@ -145,20 +169,6 @@ namespace BettaLib.FEAModel
                 }
             }
 
-            //apply loads
-            foreach (Load l in LoadCase.Loads)
-            {
-                if (l is LoadNodal pl)
-                {
-                    Point3 p = new Point3 (pl.NodeAppliedOn.Position.X, pl.NodeAppliedOn.Position.Y, pl.NodeAppliedOn.Position.Z);
-                    FENode n = feNodes.EnsureNode(pl.NodeAppliedOn.Position, Constants.Epsilon);
-
-                    Vector3 f = new Vector3(pl.Fx, pl.Fy, pl.Fz);
-                    Vector3 m = new Vector3(pl.Mx, pl.My, pl.Mz);
-                    n.ApplyLoad(f, m);
-                }
-                //else if (l is LinearLoad ll) //Linear load is not implemented yet
-            }
 
             //split beams
             List<FEBeam> DupFEBeams = new List<FEBeam>();
@@ -167,10 +177,19 @@ namespace BettaLib.FEAModel
                 List<FEBeam> newBeams = bs.SplitBeam();
                 DupFEBeams.AddRange(newBeams);
             }
+
             //Check for duplicate beams
-            foreach (FEBeam b in DupFEBeams)
+            //foreach (FEBeam b in DupFEBeams)
+            //{
+            //    feBeams.EnsureEdge(b, Constants.Epsilon);
+            //    //I never set value for the Origin
+            //}
+
+            for (int i = 0; i < DupFEBeams.Count; ++i)
             {
-                feBeams.EnsureEdge(b, Constants.Epsilon);
+                FEBeam b = feBeams.EnsureEdge(DupFEBeams[i], Constants.Epsilon);
+                b.Origin = DupFEBeams[i].Origin;
+                //I never set value for the Origin
             }
 
         }
@@ -185,6 +204,8 @@ namespace BettaLib.FEAModel
         {
             public Beam beam;
             public List<XEvent> XEvents = new();
+
+            public object GlobalStiffnessMatrix { get; private set; }
 
             public BeamSplits(Beam b, FENode n1, FENode n2)
             {
@@ -231,7 +252,76 @@ namespace BettaLib.FEAModel
                 return newBeams;
             }
 
-
         }
+        public String PrintGlobalStiffnessMatrix()
+        {
+            //display the global stiffness matrix in a readable format
+
+            return GlobalStiffnessMatrix.ToString();
+        }
+
+        public String PrintGlobalLoadMatrix()
+        {
+            //display the global load matrix in a readable format
+
+            return GlobalStiffnessMatrix.ToString();
+        }
+
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("__________________________________________________________________________________");
+            sb.AppendLine("__________________________________________________________________________________");
+            sb.AppendLine("");
+
+            sb.AppendLine("FE Model: ");
+            sb.AppendLine("__________________________________________________________________________________");
+            sb.AppendLine("__________________________________________________________________________________");
+            sb.AppendLine("");
+
+
+            sb.AppendLine("Beams: ");
+            sb.AppendLine("__________________________________________________________________________________");
+            sb.AppendLine("__________________________________________________________________________________");
+
+
+            foreach (FEBeam b in feBeams)
+            {
+                sb.AppendLine("A Beam FROM: " + b.N0 + "TO: " + b.N1);
+                sb.AppendLine("T Matrix: ");
+                sb.AppendLine(b.PrintTransformationMatrix());
+                sb.AppendLine("k Matrix: ");
+                sb.AppendLine(b.PrintLocalStiffnessMatrix());
+                sb.AppendLine("T' k T Matrix ");
+                sb.AppendLine(b.PrintGlobalElementalStiffnessMatrix());
+                sb.AppendLine("______________________________________________________________________________");
+                sb.AppendLine("______________________________________________________________________________");
+            }
+            sb.AppendLine("");
+
+            sb.AppendLine("Nodes: ");
+            sb.AppendLine("______________________________________________________________________________");
+            sb.AppendLine("______________________________________________________________________________");
+            foreach (FENode n in feNodes)
+            {
+                sb.AppendLine(n.ToString());
+                sb.AppendLine(n.PrintForceVector());
+                sb.AppendLine(n.PrintMomentVector());
+                sb.AppendLine(n.PrintDisplacementVector());
+                sb.AppendLine(n.PrintDeflections());
+                sb.AppendLine("______________________________________________________________________________");
+                sb.AppendLine("______________________________________________________________________________");
+
+
+            }
+            sb.AppendLine("Global Stiffness Matrix: ");
+            sb.AppendLine(PrintGlobalStiffnessMatrix());
+            sb.AppendLine("Global Load Matrix: ");
+            sb.AppendLine(PrintGlobalLoadMatrix());
+
+            return sb.ToString();
+        }
+
     }
 }

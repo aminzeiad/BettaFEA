@@ -10,11 +10,7 @@ using BettaLib.Utils;
 
 namespace BettaLib.FEAModel
 {
-    public interface IFEElement //to make it generalizable to other elements
-    {
-        void AssembleOnGlobalStiffnessMatrix(Matrix<double> K);
-        int DOF { get; }
-    }
+
     public class FEBeam : IEdge, IFEElement
     {
         public Matrix<double> LocalEquivalentNodalLoad;
@@ -26,14 +22,14 @@ namespace BettaLib.FEAModel
 
         public Beam? Origin { get; set; }
 
-        public FEBeam(FENode node1, FENode node2, Beam? Origin = null) 
+        public FEBeam(FENode node1, FENode node2, Beam? Origin = null)
         {
             N0 = node1;
             N1 = node2;
             this.Origin = Origin;
         }
 
-        public FEBeam(){ }
+        public FEBeam() { }
 
         protected Matrix<double> CalculateLocalStiffnessMatrix()
         {
@@ -103,6 +99,11 @@ namespace BettaLib.FEAModel
             //Calculating the local coordinate system Lamda
             double[,] Lambda = new double[3, 3];
 
+            //Here I get an error because sometime the FEBeam has no Origin
+            //the only reason to use the origin is to get the local coordinate system
+            //so maybe I can get the local cordiante system by creating Beam object with the same N0 and N1
+            //and then use the Beam object to get the local coordinate system
+
             Lambda[0, 0] = Origin.vx.X; //Later on we can ask the user to specify where is the local y axis instead of just assumin
             Lambda[0, 1] = Origin.vx.Y;
             Lambda[0, 2] = Origin.vx.Z;
@@ -166,7 +167,7 @@ namespace BettaLib.FEAModel
             return kg;
         }
 
-  
+
 
         public void InitializeLocalEquivalentLoad()
         {
@@ -182,20 +183,37 @@ namespace BettaLib.FEAModel
             int i1 = N1.Id * 6;
 
             int[] global_dof_map = new int[12];
-            for(int i = 0; i < 6; i++)
+            for (int i = 0; i < 6; i++)
             {
                 global_dof_map[i] = i0 + i;
                 global_dof_map[i + 6] = i1 + i;
             }
 
 
-            for(int i = 0; i < 12; i++)
+            for (int i = 0; i < 12; i++)
             {
-                for(int j = 0; j < 12; j++)
+                for (int j = 0; j < 12; j++)
                 {
                     K[global_dof_map[i], global_dof_map[j]] += Ke[i, j];
                 }
             }
         }
+
+        public String PrintLocalStiffnessMatrix()
+        {
+            return CalculateLocalStiffnessMatrix().ToString();
+        }
+
+        public String PrintGlobalElementalStiffnessMatrix()
+        {
+            return CalculateGlobalElementalStiffnessMatrix().ToString();
+        }
+
+        public String PrintTransformationMatrix()
+        {
+            return CalculateTransformationMatrix().ToString();
+        }
+
+
     }
 }

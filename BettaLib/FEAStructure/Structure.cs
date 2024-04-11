@@ -34,6 +34,8 @@ namespace BettaLib.FEAStructure
         public Beam AddBeam(Node start, Node end, CrossSection cs)
         {
             Beam b = strBeams.EnsureEdge(new Beam(start, end, cs), Constants.Epsilon);
+            //Since EnsureEdge doesn't handle the assignment of CrossSection, we do it here
+            b.CrossSection = cs;
             return b;
         }
 

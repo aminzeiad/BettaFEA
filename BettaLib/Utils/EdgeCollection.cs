@@ -24,6 +24,11 @@ namespace BettaLib.Utils
             return Edges.GetEnumerator();
         }
 
+        public void Clear()
+        {
+            Edges.Clear();
+        }
+
         // Explicit implementation for IEnumerable.GetEnumerator, required for non-generic interface
         IEnumerator IEnumerable.GetEnumerator()
         {

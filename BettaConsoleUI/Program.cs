@@ -1,4 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using BettaLib.FEAModel;
 using BettaLib.FEAStructure;
 using BettaLib.Geometry;
 
@@ -100,6 +101,8 @@ Console.WriteLine(lc + "\n");
 
 
 /////////////////////////////////////////////////////////////////////////////////////
-//STRModel model = s.BuildModel(new LoadCase[] { lc, lc1, lc2 });
+FEModel model = new FEModel(str, lc);
 
-//model.Solve();
+model.PerformAnalysis();
+
+Console.WriteLine(model + "\n");

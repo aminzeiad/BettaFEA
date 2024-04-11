@@ -23,6 +23,11 @@ namespace BettaLib.Utils
             return Nodes.GetEnumerator();
         }
 
+        public void Clear()
+        {
+            Nodes.Clear();
+        }
+
         // Explicit implementation for IEnumerable.GetEnumerator, required for non-generic interface
         IEnumerator IEnumerable.GetEnumerator()
         {

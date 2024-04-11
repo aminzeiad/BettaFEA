@@ -39,6 +39,8 @@ namespace BettaLib.FEAStructure
         public void AddSupport(Node node, Constraints constraints)
         {
             node.Support = new Support(constraints);
+            //Do I need to make sure that the node is not already in the list?
+            //Do I need to check if a support was added to a node that is not in the structure?
             Supports.Add(node.Support);
         }
 
