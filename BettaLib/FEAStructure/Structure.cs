@@ -31,12 +31,14 @@ namespace BettaLib.FEAStructure
             return n;
         }
 
-        public Beam AddBeam(Node start, Node end, CrossSection cs)
+        public Beam AddBeam(Node start, Node end, CrossSection _cs, Vector3 _vzz = default(Vector3))
         {
-            Beam b = strBeams.EnsureEdge(new Beam(start, end, cs), Constants.Epsilon);
-            //Since EnsureEdge doesn't handle the assignment of CrossSection, The local Cordination System of the Beam is not updated.
-            b.CrossSection = cs;
-            b.Refresh();
+            Beam b = strBeams.EnsureEdge(new Beam(start, end, _cs, _vzz), Constants.Epsilon);
+            b.CrossSection = _cs;
+            if (_vzz != default(Vector3))
+            {
+                b.RefreshCoordinates(_vzz);
+            }
             return b;
         }
 

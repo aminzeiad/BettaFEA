@@ -55,7 +55,7 @@ namespace BettaLib.FEAModel
                 var entry = GlobalStiffnessMatrix[i, id];
                 GlobalStiffnessMatrix[i, id] = 0.0;
                 GlobalStiffnessMatrix[id, i] = 0.0;
-                GlobalLoadMatrix[i] -= value * entry;
+                GlobalLoadMatrix[i] -= value * entry; //fixing the other side subtract the value that we know
             }
 
             GlobalStiffnessMatrix[id,id]= 1.0;
@@ -77,7 +77,7 @@ namespace BettaLib.FEAModel
 
         private void LockMatrixVariableFast(int id, double value)
         {
-            const double veryLarge = 500000000.0;
+            const double veryLarge = 90000000000000.0;
 
             GlobalStiffnessMatrix[id, id] = veryLarge;
             GlobalLoadMatrix[id] = value * veryLarge;
@@ -100,9 +100,6 @@ namespace BettaLib.FEAModel
                 }
             }
             
-
-
-            //PerformStaticCondensation();
 
             //SolveHooksLaw(); //F = K * u
 
@@ -164,6 +161,19 @@ namespace BettaLib.FEAModel
             foreach (Beam b in Structure.strBeams)
             {
                 FENode n1 = feNodes.EnsureNode(b.N0.Position, Constants.Epsilon);
+                if (b.N0.Support!= null)
+                {
+                    n1.Support = b.N0.Support;
+                    n1.IsSupportNode = true;
+                    //set the support type
+                    if (n1.Support.Ux == true) n1.SupportType |= FENodeSupportType.DX;
+                    if (n1.Support.Uy == true) n1.SupportType |= FENodeSupportType.DY;
+                    if (n1.Support.Uz == true) n1.SupportType |= FENodeSupportType.DZ;
+                    if (n1.Support.Rxx == true) n1.SupportType |= FENodeSupportType.RX;
+                    if (n1.Support.Ryy == true) n1.SupportType |= FENodeSupportType.RY;
+                    if (n1.Support.Rzz == true) n1.SupportType |= FENodeSupportType.RZ;
+                    
+                }
                 //I never set values for isSupportNode and Origin
                 n1.Origin = b.N0;
                 FENode n2 = feNodes.EnsureNode(b.N1.Position, Constants.Epsilon);
@@ -228,17 +238,15 @@ namespace BettaLib.FEAModel
             }
 
             //Check for duplicate beams
-            //foreach (FEBeam b in DupFEBeams)
-            //{
-            //    feBeams.EnsureEdge(b, Constants.Epsilon);
-            //    //I never set value for the Origin
-            //}
-
-            for (int i = 0; i < DupFEBeams.Count; ++i)
+            foreach (FEBeam b in DupFEBeams)
             {
-                FEBeam b = feBeams.EnsureEdge(DupFEBeams[i], Constants.Epsilon);
-                b.Origin = DupFEBeams[i].Origin;
-                //I never set value for the Origin
+                FEBeam fb = feBeams.EnsureEdge(b, Constants.Epsilon);
+                //I need to make sure that the local cordinates are set properly
+                fb.CrossSection = b.CrossSection;
+                fb.Vxx = b.Vxx;
+                fb.Vyy = b.Vyy;
+                fb.Vzz = b.Vzz;
+
             }
 
         }

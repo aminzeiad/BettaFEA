@@ -35,19 +35,19 @@ namespace BettaLib.Geometry
             End = l.End;
         }
         //Methods
-        public Point3 From => Start;
-        public Point3 To => End;
-        public Point3 PointAt(double t) => Start + (End - Start) * t;
-        public Vector3 Direction => End - Start;
-        public double Length => Start.DistanceTo(End);
-        public double LengthSquared => Start.DistanceToSquared(End);
-        public Point3 MidPoint => (Start + End) / 2;
-        public bool IsEqualTo(Line3 l, double tollerance) => Start.IsEqualTo(l.Start, tollerance) && End.IsEqualTo(l.End, tollerance);
-        public override bool Equals(object obj) => obj is Line3 l && Equals(l);
-        public bool Equals(Line3 l) => Start == l.Start && End == l.End || Start == l.End && End == l.Start;
-        public override int GetHashCode() => HashCode.Combine(Start, End);
+        public readonly Point3 From => Start;
+        public readonly Point3 To => End;
+        public readonly Point3 PointAt(double t) => Start + (End - Start) * t;
+        public readonly Vector3 Direction => End - Start;
+        public readonly double Length => Start.DistanceTo(End);
+        public readonly double LengthSquared => Start.DistanceToSquared(End);
+        public readonly Point3 MidPoint => (Start + End) / 2;
+        public readonly bool IsEqualTo(Line3 l, double tollerance) => Start.IsEqualTo(l.Start, tollerance) && End.IsEqualTo(l.End, tollerance);
+        public override readonly bool Equals(object? obj) => obj is Line3 l && Equals(l);
+        public readonly bool Equals(Line3 l) => Start == l.Start && End == l.End || Start == l.End && End == l.Start;
+        public override readonly int GetHashCode() => HashCode.Combine(Start, End);
 
-        public bool IsOnLine(Point3 p, double tollerance)
+        public readonly bool IsOnLine(Point3 p, double tollerance)
         {
             double length = Start.DistanceTo(p) + p.DistanceTo(End);
             return length - Length <= tollerance;
@@ -63,10 +63,10 @@ namespace BettaLib.Geometry
 
             (bool success, double t1, double t2, Point3 p1, Point3 p2) result = (false, 0, 0, new Point3(0, 0, 0), new Point3(0, 0, 0));
 
-           Vector3 a = new Vector3(l1.From);
-            Vector3 b = new Vector3(l1.To);
-            Vector3 c = new Vector3(l2.From);
-            Vector3 d = new Vector3(l2.To);
+           Vector3 a = new(l1.From);
+            Vector3 b = new(l1.To);
+            Vector3 c = new(l2.From);
+            Vector3 d = new(l2.To);
 
             Vector3 r = b - a;
             Vector3 s = d - c;
@@ -112,6 +112,6 @@ namespace BettaLib.Geometry
         public static bool operator ==(Line3 l1, Line3 l2) => l1.Equals(l2);
         public static bool operator !=(Line3 l1, Line3 l2) => !l1.Equals(l2);
         //toString
-        public override string ToString() => $"({Start}, {End})";
+        public override readonly string ToString() => $"({Start}, {End})";
     }
 }

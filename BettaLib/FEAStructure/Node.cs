@@ -22,7 +22,11 @@ namespace BettaLib.FEAStructure
         //Constructors
         public Node(Point3 position) { X = position.X; Y = position.Y; Z = position.Z; }
         public Node(double x, double y, double z) { X = x; Y = y; Z = z; }
-        public Node() { }
+        public Node() { 
+            X = 0; 
+            Y = 0; 
+            Z = 0;
+        }
 
         //Methods
         public static bool Equals(Node n1, Node n2) => n1.X == n2.X && n1.Y == n2.Y && n1.Z == n2.Z; //Do I need to consider rounding errors?

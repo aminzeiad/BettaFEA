@@ -37,25 +37,24 @@ namespace BettaLib.Geometry
         }
 
         //Methods
-        public double Length => Math.Sqrt(X * X + Y * Y + Z * Z);
+        public readonly double Length => Math.Sqrt(X * X + Y * Y + Z * Z);
         
-        public double LengthSquared => X * X + Y * Y + Z * Z;
+        public readonly double LengthSquared => X * X + Y * Y + Z * Z;
         
         public void Reverse() { X = -X; Y = -Y; Z = -Z; }
 
-        public override int GetHashCode() { return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode(); }
+        public override readonly int GetHashCode() { return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode(); }
         
-        public bool IsZero(double tollerance) { return Math.Abs(X) < tollerance && Math.Abs(Y) < tollerance && Math.Abs(Z) < tollerance; }
+        public readonly bool IsZero(double tollerance) { return Math.Abs(X) < tollerance && Math.Abs(Y) < tollerance && Math.Abs(Z) < tollerance; }
         
-        public bool IsEqualTo(Vector3 v, double tollerance) { return Math.Abs(X - v.X) < tollerance && Math.Abs(Y - v.Y) < tollerance && Math.Abs(Z - v.Z) < tollerance; }
+        public readonly bool IsEqualTo(Vector3 v, double tollerance) { return Math.Abs(X - v.X) < tollerance && Math.Abs(Y - v.Y) < tollerance && Math.Abs(Z - v.Z) < tollerance; }
         
-        public bool Equals(Vector3 other) { return X == other.X && Y == other.Y && Z == other.Z; }
+        public readonly bool Equals(Vector3 other) { return X == other.X && Y == other.Y && Z == other.Z; }
 
-        public override bool Equals(object obj)
+        public override readonly bool Equals(object? obj)
         {
-            if (obj is Vector3)
+            if (obj is Vector3 v)
             {
-                Vector3 v = (Vector3)obj;
                 return X == v.X && Y == v.Y && Z == v.Z;
             }
             return false;
@@ -96,7 +95,7 @@ namespace BettaLib.Geometry
         public static bool IsPerpendicularTo(Vector3 v1, Vector3 v2, double tollerance)
         {
             double angle = AngleBetween(v1, v2);
-            return angle < tollerance || angle > Math.PI - tollerance;
+            return Math.Abs(angle - Math.PI / 2) < tollerance;
         }
 
         //Vec3 Operators
@@ -119,7 +118,7 @@ namespace BettaLib.Geometry
         public static Vector3 UnitZ => new(0, 0, 1);
 
         //toString
-        public override string ToString()
+        public override readonly string ToString()
         {
             return "(" + X + ", " + Y + ", " + Z + ")";
         }

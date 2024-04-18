@@ -36,21 +36,21 @@ namespace BettaLib.Geometry
         }
 
         //Methods
-        public Vector3 VectorTo(Point3 p) => new Vector3(p.X - X, p.Y - Y, p.Z - Z);
+        public readonly Vector3 VectorTo(Point3 p) => new(p.X - X, p.Y - Y, p.Z - Z);
        
-        public double DistanceTo(Point3 p) => Math.Sqrt((X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y) + (Z - p.Z) * (Z - p.Z));
+        public readonly double DistanceTo(Point3 p) => Math.Sqrt((X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y) + (Z - p.Z) * (Z - p.Z));
       
-        public double DistanceToSquared(Point3 p) => (X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y) + (Z - p.Z) * (Z - p.Z);
+        public readonly double DistanceToSquared(Point3 p) => (X - p.X) * (X - p.X) + (Y - p.Y) * (Y - p.Y) + (Z - p.Z) * (Z - p.Z);
       
-        public bool IsEqualTo(Point3 p, double tolerance) => Math.Abs(X - p.X) < tolerance && Math.Abs(Y - p.Y) < tolerance && Math.Abs(Z - p.Z) < tolerance;
+        public readonly bool IsEqualTo(Point3 p, double tolerance) => Math.Abs(X - p.X) < tolerance && Math.Abs(Y - p.Y) < tolerance && Math.Abs(Z - p.Z) < tolerance;
       
-        public override bool Equals(object obj) => obj is Point3 p && Equals(p);
+        public override readonly bool Equals(object? obj) => obj is Point3 p && Equals(p);
       
-        public bool Equals(Point3 p) => X == p.X && Y == p.Y && Z == p.Z;
+        public readonly bool Equals(Point3 p) => X == p.X && Y == p.Y && Z == p.Z;
        
-        public override int GetHashCode() => HashCode.Combine(X, Y, Z);
+        public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
       
-        public static Point3 Origin => new Point3(0, 0, 0);
+        public static Point3 Origin => new(0, 0, 0);
 
         //boolean operators
         public static bool operator ==(Point3 p1, Point3 p2) => p1.Equals(p2);
@@ -66,7 +66,7 @@ namespace BettaLib.Geometry
         public static Point3 operator /(Point3 p, double s) { return new Point3(p.X / s, p.Y / s, p.Z / s); }
        
         //toString
-        public override string ToString() => $"({X}, {Y}, {Z})";
+        public override readonly string ToString() => $"({X}, {Y}, {Z})";
 
 
     }

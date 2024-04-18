@@ -1,4 +1,5 @@
-﻿using BettaLib.Geometry;
+﻿using BettaLib.FEAStructure;
+using BettaLib.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,7 @@ namespace BettaLib.Utils
 
         Point3 Position { get; set; }
         int Id { get; set; }
+        Support Support { get; set; }
 
     }
 }

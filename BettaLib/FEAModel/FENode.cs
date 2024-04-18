@@ -10,7 +10,7 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace BettaLib.FEAModel
 {
-
+    //
     public enum DOFID
     {
         DX = 0,
@@ -21,6 +21,7 @@ namespace BettaLib.FEAModel
         RZ = 5
     }
 
+    //a flag enum that represents the support type of a node
     [Flags]
     public enum FENodeSupportType
     {
@@ -40,6 +41,7 @@ namespace BettaLib.FEAModel
         public Vector3 Force { get; set; } = new Vector3();
         public Vector3 Moment { get; set; } = new Vector3();
         public Vector3 Displacement { get; set; } = new Vector3();
+        public Support Support { get; set; } = new Support(Constraints.None);
         //a boolean that indicates if this a master node or a slave node created beacuase of a support
         //why? Becasue we want to create a spring between the master node and the slave node and we want to know which is which
         public bool IsSupportNode { get; set; } = false; //a node defined because of a support

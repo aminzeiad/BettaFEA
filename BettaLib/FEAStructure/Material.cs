@@ -14,8 +14,19 @@ namespace BettaLib.FEAStructure
         public double Density { get; set; }
         public double YieldStrength { get; set; }
         public double ThermalExpansionCoefficient { get; set; }
-        public double ShearModulus => ElasticModulus / (2 * (1 + PoissonRatio));
+        //public double ShearModulus => ElasticModulus / (2 * (1 + PoissonRatio));
+        public double ShearModulus { get; set; }
 
+        public Material()
+        {
+            Name = "Default";
+            ElasticModulus = 100000;
+            PoissonRatio = 0.1;
+            Density = 100;
+            YieldStrength = 100;
+            ThermalExpansionCoefficient = 0.00001;
+            ShearModulus = 100;
+        }
         public static Material MakeGeneric(string name)
         {
             return new Material(name, 210000, 0.3, 7850, 235, 0.000012);
@@ -39,6 +50,7 @@ namespace BettaLib.FEAStructure
             Density = density;
             YieldStrength = yieldStrength;
             ThermalExpansionCoefficient = thermalExpansionCoefficient;
+            ShearModulus = ElasticModulus / (2 * (1 + PoissonRatio));
         }
 
         public override string ToString()

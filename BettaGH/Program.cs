@@ -17,7 +17,7 @@ Console.WriteLine(m1 + "\n");
 /////////////////////////////////////////////////////////////////////////////////////
 
 //Add cross section to the system
-CrossSection cs = new("Circ", 0.01, 0.0001, 0.0001, 0.0001, m1);
+CrossSection cs = new("Circ", 0.01, 5E-6, 5E-6, 10E-6, m1);
 
 Console.WriteLine(cs + "\n");
 
@@ -53,7 +53,7 @@ lc.AddSupport(n1, Constraints.All);
 Console.WriteLine(n1 + "\n");
 Console.WriteLine(n2 + "\n");
 
-lc.AddPointLoad(n2, 0, 0, -1, 0, 0, 0, n2);
+lc.AddPointLoad(n2, 0, 0, -200, 0, 0, 0, n2);
 
 Console.WriteLine(lc + "\n");
 
