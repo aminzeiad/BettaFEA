@@ -11,7 +11,6 @@ Structure str = new Structure();
 
 //add material to the system
 Material m1 = Material.MakeSteel("Steel");
-Material m2 = Material.MakeConcrete("Concrete");
 
 Console.WriteLine(m1 + "\n");
 
@@ -25,7 +24,6 @@ m1.YieldStrength = 220;
 */
 
 Console.WriteLine(m1 + "\n");
-Console.WriteLine(m2 + "\n");
 
 //s.AddMaterial(m)XXX;
 //Actually this is not needed because the material is added to the cross section also it's better to be floating as it coould be used in multiple structures
@@ -34,7 +32,6 @@ Console.WriteLine(m2 + "\n");
 
 //Add cross section to the system
 CrossSection cs1 = CrossSection.MakeCircularHollow("CircHollow", 0.05, 0.03, 0.01, m1);
-CrossSection cs2 = CrossSection.MakeRectangular("Rect", 0.05, 0.03, m2);
 
 /*
 //you can edit the cross section properties 
@@ -45,7 +42,6 @@ cs1.Area = 100;
 */
 
 Console.WriteLine(cs1 + "\n");
-Console.WriteLine(cs2 + "\n");
 //s.AddCrossSection(s)XXX;
 //Actually this is not needed because the cross section is added to the beam also it's better to be floating as it coould be used in multiple structures
 
@@ -54,12 +50,10 @@ Console.WriteLine(cs2 + "\n");
 //Add a node to the system
 Point3 p1 = new Point3(0.0, 0.0, 0.0);
 Point3 p2 = new Point3(5.0, 0.0, 0.0);
-Point3 p3 = new Point3(2.5, 0.0, 3.0);
 
 
 Node n1 = str.AddNode(p1);
 Node n2 = str.AddNode(p2);
-Node n3 = str.AddNode(p3);
 
 
 Console.WriteLine(n1.Position + "\n");
@@ -70,11 +64,8 @@ Console.WriteLine(n1 + "\n");
 //Add beams to the system
 
 Beam b1 = str.AddBeam(n1, n2, cs1); //Could also be added using the nodes
-Beam b2 = str.AddBeam(n2, n3, cs1);
-Beam b3 = str.AddBeam(n3, n1, cs1);
 
 Console.WriteLine(b1 + "\n");
-Console.WriteLine(b2 + "\n");
 
 
 /////////////////////////////////////////////////////////////////////////////////////
@@ -83,15 +74,13 @@ Console.WriteLine(b2 + "\n");
 
 LoadCase lc = new LoadCase("Test Case");
 
-lc.AddSupport(n1, Constraints.Ux | Constraints.Uy | Constraints.Uz);
-lc.AddSupport(n2, Constraints.Uz);
+lc.AddSupport(n1, Constraints.All);
 
 
 Console.WriteLine(n1 + "\n");
 Console.WriteLine(n2 + "\n");
 
-
-lc.AddPointLoad(n2, 0, 0, -200, 0, 0, 0, n3);
+lc.AddPointLoad(n2, 0, 0, -200, 0, 0, 0, n2);
 
 
 Console.WriteLine(lc + "\n");

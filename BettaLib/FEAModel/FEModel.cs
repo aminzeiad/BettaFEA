@@ -47,11 +47,60 @@ namespace BettaLib.FEAModel
             SolveLinearStatic();
         }
 
+        private void LockMatrixVariable(int id, double value)
+        {
+           int nx = GlobalStiffnessMatrix.RowCount;
+            for (int i=0; i<nx; ++i)
+            {
+                var entry = GlobalStiffnessMatrix[i, id];
+                GlobalStiffnessMatrix[i, id] = 0.0;
+                GlobalStiffnessMatrix[id, i] = 0.0;
+                GlobalLoadMatrix[i] -= value * entry;
+            }
+
+            GlobalStiffnessMatrix[id,id]= 1.0;
+            GlobalLoadMatrix[id] = value;
+        }
+
+        private void LockMatrixVariableToZero(int id)
+        {
+            int nx = GlobalStiffnessMatrix.RowCount;
+            for (int i = 0; i < nx; ++i)
+            {
+                GlobalStiffnessMatrix[i, id] = 0.0;
+                GlobalStiffnessMatrix[id, i] = 0.0;
+            }
+
+            GlobalStiffnessMatrix[id, id] = 1.0;
+            GlobalLoadMatrix[id] = 0.0;
+        }
+
+        private void LockMatrixVariableFast(int id, double value)
+        {
+            const double veryLarge = 500000000.0;
+
+            GlobalStiffnessMatrix[id, id] = veryLarge;
+            GlobalLoadMatrix[id] = value * veryLarge;
+        }
+
         private void SolveLinearStatic()
         {
             InitializeSystem();
 
             CalculateGlobalStiffnessMatrix();
+
+            foreach(FENode n in feNodes)
+            {
+                for(int i = 0; i < 6; ++i)
+                {
+                    if (n.HasSupport((DOFID)i))
+                    {
+                        LockMatrixVariable(n.GetGlobalDOF((DOFID)i), 0.0);
+                    }                   
+                }
+            }
+            
+
 
             //PerformStaticCondensation();
 
@@ -257,14 +306,14 @@ namespace BettaLib.FEAModel
         {
             //display the global stiffness matrix in a readable format
 
-            return GlobalStiffnessMatrix.ToString();
+            return GlobalStiffnessMatrix.ToString(30, 30);
         }
 
         public String PrintGlobalLoadMatrix()
         {
             //display the global load matrix in a readable format
 
-            return GlobalStiffnessMatrix.ToString();
+            return GlobalLoadMatrix.ToString(30, 30);
         }
 
 

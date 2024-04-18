@@ -46,6 +46,9 @@ namespace BettaLib.FEAModel
             double J = Origin.CrossSection.J;
             double L = Origin.Length;
 
+            var L2 = L * L;
+            var L3 = L2 * L;
+
             ke[0, 0] = E * A / L;
             ke[0, 6] = -E * A / L;
             ke[1, 1] = 12 * E * Izz / Math.Pow(L, 3);
@@ -201,17 +204,17 @@ namespace BettaLib.FEAModel
 
         public String PrintLocalStiffnessMatrix()
         {
-            return CalculateLocalStiffnessMatrix().ToString();
+            return CalculateLocalStiffnessMatrix().ToString(30, 30);
         }
 
         public String PrintGlobalElementalStiffnessMatrix()
         {
-            return CalculateGlobalElementalStiffnessMatrix().ToString();
+            return CalculateGlobalElementalStiffnessMatrix().ToString(30, 30);
         }
 
         public String PrintTransformationMatrix()
         {
-            return CalculateTransformationMatrix().ToString();
+            return CalculateTransformationMatrix().ToString(30, 30);
         }
 
 

@@ -34,8 +34,9 @@ namespace BettaLib.FEAStructure
         public Beam AddBeam(Node start, Node end, CrossSection cs)
         {
             Beam b = strBeams.EnsureEdge(new Beam(start, end, cs), Constants.Epsilon);
-            //Since EnsureEdge doesn't handle the assignment of CrossSection, we do it here
+            //Since EnsureEdge doesn't handle the assignment of CrossSection, The local Cordination System of the Beam is not updated.
             b.CrossSection = cs;
+            b.Refresh();
             return b;
         }
 

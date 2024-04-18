@@ -42,7 +42,7 @@ namespace BettaLib.FEAStructure
 
 
         //Methods
-        private void Refresh()
+        public void Refresh()
         {
             _vx = N1.Position - N0.Position;
             _vx.Normalize();
