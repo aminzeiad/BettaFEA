@@ -47,7 +47,7 @@ namespace BettaLib.Utils
             {
                 Vzz = up;
                 Vzz.Normalize();
-                Vyy = Vector3.Cross(Vxx, Vzz);
+                Vyy = Vector3.Cross(Vzz, Vxx);
             }
         }
     }

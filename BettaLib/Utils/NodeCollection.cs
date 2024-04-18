@@ -34,6 +34,13 @@ namespace BettaLib.Utils
             return GetEnumerator();
         }
 
+        //allow for indexing
+        public TNode this[int index]
+        {
+            get { return Nodes[index]; }
+            set { Nodes[index] = value; }
+        }
+
         public void AddNode(Point3 p)
         {
             TNode n = EnsureNode(p, Constants.Epsilon);

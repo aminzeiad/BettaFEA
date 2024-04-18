@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 //using System.Numerics;
 using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Factorization;
 
 namespace BettaLib.FEAModel
 {
@@ -101,11 +102,30 @@ namespace BettaLib.FEAModel
             }
             
 
-            //SolveHooksLaw(); //F = K * u
+            Solve(); //F = K * u
 
             //UndoStaticCondensation();
 
-            //StoreDisplacements();
+            StoreDisplacements();
+        }
+
+        private void StoreDisplacements()
+        {
+            int size = feNodes.Count * 6;
+            for (int i = 0; i < size; ++i)
+            {
+                int id = i / 6;
+                int dof = i % 6;
+                feNodes[id].Deflections[dof, 0] = GlobalDisplacementMatrix[i, 0];
+            }
+        }
+
+        private void Solve()
+        {
+            //Solve GlobalDisplacementMatrix = GlobalStiffnessMatrix.Inverse() * GlobalLoadMatrix
+            GlobalDisplacementMatrix = GlobalStiffnessMatrix.Inverse() * GlobalLoadMatrix.ToColumnMatrix();
+
+            //you can make the solver more efficient by using skyline solver //IDK what that is
         }
 
         private void CalculateGlobalStiffnessMatrix() 
@@ -324,6 +344,13 @@ namespace BettaLib.FEAModel
             return GlobalLoadMatrix.ToString(30, 30);
         }
 
+        public String PrintGlobalDisplacementMatrix()
+        {
+            //display the global displacement matrix in a readable format
+
+            return GlobalDisplacementMatrix.ToString(30, 30);
+        }
+
 
         public override string ToString()
         {
@@ -376,6 +403,20 @@ namespace BettaLib.FEAModel
             sb.AppendLine(PrintGlobalStiffnessMatrix());
             sb.AppendLine("Global Load Matrix: ");
             sb.AppendLine(PrintGlobalLoadMatrix());
+            sb.AppendLine("______________________________________________________________________________");
+            sb.AppendLine("______________________________________________________________________________");
+            sb.AppendLine("Global Displacement Matrix: ");
+            sb.AppendLine(PrintGlobalDisplacementMatrix());
+            sb.AppendLine("______________________________________________________________________________");
+            sb.AppendLine("______________________________________________________________________________");
+            sb.AppendLine("Nodes Deflections");
+            foreach (FENode n in feNodes)
+            {
+                sb.AppendLine(n.ToString());
+                sb.AppendLine(n.PrintDeflections());
+                sb.AppendLine("______________________________________________________________________________");
+                sb.AppendLine("______________________________________________________________________________");
+            }
 
             return sb.ToString();
         }

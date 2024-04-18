@@ -67,7 +67,6 @@ namespace Millitest
 
             Console.WriteLine("\n");
 
-            beam.
 
 
             var K = rs.GetGlobalStiffnessMatrix();
@@ -81,6 +80,23 @@ namespace Millitest
                 }
                 Console.WriteLine();
             }
+
+            //print the displacement vector
+            var value = rs.MaximumDisplacement;
+
+            Console.WriteLine("\n");
+            Console.WriteLine( "Maximum Displacement");
+            Console.WriteLine(value);
+
+
+            Console.WriteLine("\n");
+            Console.WriteLine("Displacement vectors");
+            //print the difflections vector
+            foreach (var node in rs.Nodes)
+            {
+                Console.WriteLine("{" + node.u.x + ", " + node.u.y + ", " + node.u.z + ", " + node.r.x + ", " + node.r.y + ", " + node.r.z + "}");
+            }
+
 
             //keep console open
             Console.ReadLine();
