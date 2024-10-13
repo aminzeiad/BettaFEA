@@ -60,5 +60,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\supporter\topoptC\TopOptC.csproj">
+      <Project>{4cb007b3-77b1-4267-bd75-29a1bd05791c}</Project>
+      <Name>TopOptC</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

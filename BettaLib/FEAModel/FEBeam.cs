@@ -12,12 +12,86 @@ using BettaLib.Geometry;
 namespace BettaLib.FEAModel
 {
 
-    public class FEBeam : EdgeBase, IEdge, IFEElement
+    public struct CoordinateSystem
+    {
+        public static CoordinateSystem FromXAxisAndUp(Point3 origin, Vector3 xAxis, Vector3 up)
+        {
+            //x y -> z
+            //y z -> x
+            //z x -> y
+            var zAxis = up;
+            xAxis.Normalize();
+
+
+
+            var yAxis = Vector3.Cross(xAxis, zAxis);
+
+
+            var l = yAxis.Length;
+            if (l < Constants.Epsilon)
+            {
+                if (Math.Abs(xAxis.Z) > 0.5)
+                {
+                    yAxis = Vector3.UnitX;
+                }
+                else
+                {
+                    yAxis = Vector3.UnitZ;
+                }
+            }
+            else
+            {
+                yAxis.Normalize();
+            }
+           
+            zAxis = Vector3.Cross(xAxis, yAxis);
+            zAxis.Normalize();
+            return new CoordinateSystem
+            {
+                Origin = origin,
+                XAxis = xAxis,
+                YAxis = yAxis,
+                ZAxis = zAxis
+            };
+        }
+        public Point3 Origin;
+        public Vector3 XAxis, YAxis, ZAxis;
+
+        public Matrix<double> GetRotationMatrix()
+        {
+           var mat = Matrix<double>.Build.Dense(3, 3);
+            mat[0, 0] = XAxis.X;
+            mat[0, 1] = YAxis.X;
+            mat[0, 2] = ZAxis.X;
+            mat[1, 0] = XAxis.Y;
+            mat[1, 1] = YAxis.Y;
+            mat[1, 2] = ZAxis.Y;
+            mat[2, 0] = XAxis.Z;
+            mat[2, 1] = YAxis.Z;
+            mat[2, 2] = ZAxis.Z;
+            return mat;        
+        }
+    }
+
+    public class FEBeam : IEdge, IFEElement
     {
         public Matrix<double>? LocalEquivalentNodalLoad;
         public int DOF => 12; // 6 DOF per node
 
+        bool _coordSystemNeedsUpdate = true;
+
+        public void InvalidateCoordinateSystem()
+        {
+            _coordSystemNeedsUpdate = true;
+        }
+
+        public INode N0 { get; set; }
+        public INode N1 { get; set; }
+
         public Point3 cG => (N0.Position + N1.Position) / 2;
+
+        private Vector3 _upVector = Vector3.UnitZ;
+        public Vector3 UpVector { get => _upVector; set { _upVector = value; InvalidateCoordinateSystem(); } } 
 
         public double Length => N0.Position.DistanceTo(N1.Position);
 
@@ -25,14 +99,27 @@ namespace BettaLib.FEAModel
 
         public Beam? Origin { get; set; }
 
+        private CoordinateSystem _localCoordinateSystem;
+
+        public CoordinateSystem LocalCoordinateSystem {
+            get { 
+                if (_coordSystemNeedsUpdate)
+                {
+                    RefreshCoordinates();
+                }
+                return _localCoordinateSystem;
+            }
+        }
+
         public FEBeam(FENode node1, FENode node2, Beam? Origin = null)
         {
             if (Origin != null)
             {
                 CrossSection = Origin.CrossSection;
-                Vxx = Origin.Vxx;
-                Vyy = Origin.Vyy;
-                Vzz = Origin.Vzz;
+                UpVector = Origin.UpVector;
+                //Vxx = Origin.Vxx;
+                //Vyy = Origin.Vyy;
+                //Vzz = Origin.Vzz;
             }
             else
             {
@@ -43,6 +130,22 @@ namespace BettaLib.FEAModel
             N1 = node2;
             this.Origin = Origin;
         }
+
+        public FEBeam(INode node1, INode node2, CrossSection cs, Vector3 upVector)
+        {
+            N0 = node1;
+            N1 = node2;
+            CrossSection = cs;
+            UpVector = upVector;
+        }
+
+        public FEBeam(INode node1, INode node2, CrossSection cs)
+        {
+            N0 = node1;
+            N1 = node2;
+            CrossSection = cs;
+        }
+
 
         public FEBeam() {
             N0 = new FENode();
@@ -119,22 +222,24 @@ namespace BettaLib.FEAModel
             //Calculating the trasformation matrix - a 12x12 matrix with Lamda on the diagonal
             Matrix<double> T = Matrix<double>.Build.Dense(DOF, DOF);
             //Calculating the local coordinate system Lamda
-            double[,] Lambda = new double[3, 3];
+            //double[,] Lambda = new double[3, 3];
 
-            //Here I get an error because sometime the FEBeam has no Origin
-            //the only reason to use the origin is to get the local coordinate system
-            //so maybe I can get the local cordiante system by creating Beam object with the same N0 and N1
-            //and then use the Beam object to get the local coordinate system
+            ////Here I get an error because sometime the FEBeam has no Origin
+            ////the only reason to use the origin is to get the local coordinate system
+            ////so maybe I can get the local cordiante system by creating Beam object with the same N0 and N1
+            ////and then use the Beam object to get the local coordinate system
 
-            Lambda[0, 0] = Vxx.X; //Later on we can ask the user to specify where is the local y axis instead of just assumin
-            Lambda[0, 1] = Vxx.Y;
-            Lambda[0, 2] = Vxx.Z;
-            Lambda[1, 0] = Vzz.X;
-            Lambda[1, 1] = Vzz.Z;
-            Lambda[1, 2] = Vzz.Y;
-            Lambda[2, 0] = Vyy.Z;
-            Lambda[2, 1] = Vyy.Z;
-            Lambda[2, 2] = Vyy.Y;
+            //Lambda[0, 0] = Vxx.X; //Later on we can ask the user to specify where is the local y axis instead of just assumin
+            //Lambda[0, 1] = Vxx.Y;
+            //Lambda[0, 2] = Vxx.Z;
+            //Lambda[1, 0] = Vzz.X;
+            //Lambda[1, 1] = Vzz.Z;
+            //Lambda[1, 2] = Vzz.Y;
+            //Lambda[2, 0] = Vyy.Z;
+            //Lambda[2, 1] = Vyy.Z;
+            //Lambda[2, 2] = Vyy.Y;
+
+            var Lambda = LocalCoordinateSystem.GetRotationMatrix();//.ToArray();
 
             //Filling the transformation matrix with lambda in the diagonal
             T[0, 0] = Lambda[0, 0];
@@ -223,34 +328,11 @@ namespace BettaLib.FEAModel
         }
 
         //Methods
-        public void RefreshCoordinates(Vector3 vzz)
+        public void RefreshCoordinates()
         {
-            Vxx = N1.Position - N0.Position;
-            Vxx.Normalize();
-            bool notPerpendicular = !Vector3.IsPerpendicularTo(Vxx, vzz, Constants.Epsilon);
+           _localCoordinateSystem = CoordinateSystem.FromXAxisAndUp(N0.Position, N1.Position - N0.Position, UpVector);
+            _coordSystemNeedsUpdate = false;
 
-            if (vzz == default(Vector3) || notPerpendicular)
-            {
-                if (Vector3.IsParallelTo(Vxx, Vector3.UnitZ, Constants.Epsilon))
-                {
-                    Vyy = Vector3.UnitY;
-                    Vzz = Vector3.Cross(Vxx, Vyy);
-                    Vzz.Normalize();
-                }
-                else
-                {
-                    Vyy = Vector3.Cross(Vector3.UnitZ, Vxx);
-                    Vyy.Normalize();
-                    Vzz = Vector3.Cross(Vxx, Vyy);
-                    Vzz.Normalize();
-                }
-            }
-            else
-            {
-                Vzz = vzz;
-                Vzz.Normalize();
-                Vyy = Vector3.Cross(Vxx, Vzz);
-            }
         }
 
         public String PrintLocalStiffnessMatrix()

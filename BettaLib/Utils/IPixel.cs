@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using BettaLib.Geometry;
 
 namespace BettaLib.Utils
 {
-    public interface IEdge
+    public interface IPixel
     {
-        INode N0 { get; set; }
-        INode N1 { get; set; }
-
+        INode2 N0 { get; set; }
+        INode2 N1 { get; set; }
+        INode2 N2 { get; set; }
+        INode2 N3 { get; set; }
     }
-
 }

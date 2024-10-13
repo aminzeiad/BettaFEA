@@ -35,10 +35,10 @@ namespace BettaLib.FEAStructure
         {
             Beam b = strBeams.EnsureEdge(new Beam(start, end, _cs, _vzz), Constants.Epsilon);
             b.CrossSection = _cs;
-            if (_vzz != default(Vector3))
-            {
-                b.RefreshCoordinates(_vzz);
-            }
+            //if (_vzz != default(Vector3))
+            //{
+            //    b.RefreshCoordinates(_vzz);
+            //}
             return b;
         }
 

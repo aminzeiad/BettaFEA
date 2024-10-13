@@ -50,7 +50,7 @@ namespace BettaLib.Geometry
        
         public override readonly int GetHashCode() => HashCode.Combine(X, Y, Z);
       
-        public static Point3 Origin => new(0, 0, 0);
+        //public static Point3 Origin => new(0, 0, 0);
 
         //boolean operators
         public static bool operator ==(Point3 p1, Point3 p2) => p1.Equals(p2);

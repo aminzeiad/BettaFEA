@@ -40,7 +40,7 @@ namespace BettaLib.FEAModel
         public object? Origin;
         public Vector3 Force { get; set; } = new Vector3();
         public Vector3 Moment { get; set; } = new Vector3();
-        public Vector3 Displacement { get; set; } = new Vector3();
+        //public Vector3 Displacement { get; set; } = new Vector3();
         public Support Support { get; set; } = new Support(Constraints.None);
         //a boolean that indicates if this a master node or a slave node created beacuase of a support
         //why? Becasue we want to create a spring between the master node and the slave node and we want to know which is which
@@ -106,11 +106,6 @@ namespace BettaLib.FEAModel
         public String PrintMomentVector()
         {
             return $"Node {Id} has a moment of {Moment}";
-        }
-
-        public String PrintDisplacementVector()
-        {
-            return $"Node {Id} has a displacement of {Displacement}";
         }
 
         public String PrintDeflections()

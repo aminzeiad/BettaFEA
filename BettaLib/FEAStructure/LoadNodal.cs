@@ -12,7 +12,7 @@ namespace BettaLib.FEAStructure
     {
         public INode NodeAppliedOn { get; set; }
 
-        public LoadNodal(INode position, double fx, double fy, double fz, double mx, double my, double mz, Node node)
+        public LoadNodal(INode position, double fx, double fy, double fz, double mx, double my, double mz)
             : base(fx, fy, fz, mx, my, mz)
         {
             NodeAppliedOn = position;

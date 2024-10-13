@@ -26,9 +26,9 @@ namespace BettaLib.FEAStructure
         public LoadCase(string name) => Name = name;
         public LoadCase(string name, LoadType type) => (Name, Type) = (name, type);
 
-        public void AddPointLoad(INode position, double fx, double fy, double fz, double mx, double my, double mz, Node node)
+        public void AddPointLoad(INode position, double fx, double fy, double fz, double mx, double my, double mz)
         {
-            Loads.Add(new LoadNodal(position, fx, fy, fz, mx, my, mz, node));
+            Loads.Add(new LoadNodal(position, fx, fy, fz, mx, my, mz));
         }
 
         public void AddPointLoad(INode position, Vector3 force, Vector3 moment)

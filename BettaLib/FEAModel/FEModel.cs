@@ -196,13 +196,28 @@ namespace BettaLib.FEAModel
                 }
                 //I never set values for isSupportNode and Origin
                 n1.Origin = b.N0;
+
+
                 FENode n2 = feNodes.EnsureNode(b.N1.Position, Constants.Epsilon);
+                if (b.N1.Support != null)
+                {
+                    n2.Support = b.N1.Support;
+                    n2.IsSupportNode = true;
+                    //set the support type
+                    if (n2.Support.Ux == true) n2.SupportType |= FENodeSupportType.DX;
+                    if (n2.Support.Uy == true) n2.SupportType |= FENodeSupportType.DY;
+                    if (n2.Support.Uz == true) n2.SupportType |= FENodeSupportType.DZ;
+                    if (n2.Support.Rxx == true) n2.SupportType |= FENodeSupportType.RX;
+                    if (n2.Support.Ryy == true) n2.SupportType |= FENodeSupportType.RY;
+                    if (n2.Support.Rzz == true) n2.SupportType |= FENodeSupportType.RZ;
+                }
                 //I never set values for isSupportNode and Origin
                 n2.Origin = b.N1;
 
 
                 beamSplits.Add(new BeamSplits(b, n1, n2));
             }
+
 
             //apply loads
             foreach (Load l in LoadCase.Loads)
@@ -263,13 +278,22 @@ namespace BettaLib.FEAModel
                 FEBeam fb = feBeams.EnsureEdge(b, Constants.Epsilon);
                 //I need to make sure that the local cordinates are set properly
                 fb.CrossSection = b.CrossSection;
-                fb.Vxx = b.Vxx;
-                fb.Vyy = b.Vyy;
-                fb.Vzz = b.Vzz;
+                fb.RefreshCoordinates();
 
             }
-
         }
+
+        public double MaximumDisplacement()
+        {
+            double max = 0.0;
+            foreach (FENode n in feNodes)
+            {
+                double d = n.Deflections.L2Norm();
+                if (d > max) max = d;
+            }
+            return max;
+        }
+
 
         struct XEvent
         {
@@ -392,7 +416,6 @@ namespace BettaLib.FEAModel
                 sb.AppendLine(n.ToString());
                 sb.AppendLine(n.PrintForceVector());
                 sb.AppendLine(n.PrintMomentVector());
-                sb.AppendLine(n.PrintDisplacementVector());
                 sb.AppendLine(n.PrintDeflections());
                 sb.AppendLine("______________________________________________________________________________");
                 sb.AppendLine("______________________________________________________________________________");

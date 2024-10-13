@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BettaLib.FEAStructurePix;
 using BettaLib.Geometry;
+using BettaLib.FEAStructure;
 
 namespace BettaLib.Utils
 {
-    public interface IEdge
+    public interface INode2
     {
-        INode N0 { get; set; }
-        INode N1 { get; set; }
-
+        Point2 Position { get; set; }
+            int Id { get; set; }
     }
-
 }
