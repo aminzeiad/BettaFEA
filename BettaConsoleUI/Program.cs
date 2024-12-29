@@ -15,7 +15,7 @@ using OpenTK.Graphics.OpenGL;
 
 
 ////start the structure
-//Structure str = new Structure();
+//Structure str = new Structure(); 
 
 ////////////////////////////////////////////////////////////////////////////////////////
 
