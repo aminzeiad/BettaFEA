@@ -85,7 +85,7 @@ using OpenTK.Graphics.OpenGL;
 
 
 
-//start the structure
+//start the structure 
 Structure str = new Structure();
 
 //////////////////////////////////////////////////////////////////////////////////////
