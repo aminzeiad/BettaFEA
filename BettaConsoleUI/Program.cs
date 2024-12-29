@@ -1,6 +1,5 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using BettaLib.FEAModel;
-using BettaLib.FEAModelPix;
 using BettaLib.FEAStructure;
 using BettaLib.Geometry;
 using OpenTK.Graphics.OpenGL;
@@ -219,34 +218,3 @@ Console.WriteLine(model + "\n");
 //Console.WriteLine(model + "\n");
 
 //Console.WriteLine(model.MaximumDisplacement());
-
-/* 
-██████  ██ ██   ██ ███████ ██      ███████     ███████ ██ ███████ ██      ██████  
-██   ██ ██  ██ ██  ██      ██      ██          ██      ██ ██      ██      ██   ██ 
-██████  ██   ███   █████   ██      ███████     █████   ██ █████   ██      ██   ██ 
-██      ██  ██ ██  ██      ██           ██     ██      ██ ██      ██      ██   ██ 
-██      ██ ██   ██ ███████ ███████ ███████     ██      ██ ███████ ███████ ██████  
-*/
-
-//FEPixField model = new FEPixField(3, 3, new Material("Dummy", 1.0, 0.3, 1.0, 1.0, 1.0));
-
-
-////fix left side nodes
-//for (int j = 0; j < model.NodeCountY; ++j)
-//{
-//    model.Nodes[0 + j * model.NodeCountX].SupportType = FENode2SupportType.All;
-//}
-
-////apply load to right side nodes
-//for (int j = 0; j < model.NodeCountY; ++j)
-//{
-//    model.Nodes[model.NodeCountX - 1 + j * model.NodeCountX].F = new BettaLib.Geometry.Vector2(0.0, -1.0);
-//}
-
-//model.PeformAnalysis();
-
-//model.ComputeSensitivity();
-//model.UpdateDensity();
-
-//Console.WriteLine(model.MaximumDisplacement());
-

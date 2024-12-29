@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BettaConsoleUI", "BettaCons
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BettaGH", "BettaGH\BettaGH.csproj", "{4A852A14-FDFB-407A-9E48-94433025CE48}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BettaPixelFieldUI", "BettaPixelFieldUI\BettaPixelFieldUI.csproj", "{DC1E5421-8FBC-47B2-B303-D308A465BD97}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,18 +55,6 @@ Global
 		{4A852A14-FDFB-407A-9E48-94433025CE48}.Release|x64.Build.0 = Release|Any CPU
 		{4A852A14-FDFB-407A-9E48-94433025CE48}.Release|x86.ActiveCfg = Release|Any CPU
 		{4A852A14-FDFB-407A-9E48-94433025CE48}.Release|x86.Build.0 = Release|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Debug|x64.Build.0 = Debug|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Debug|x86.Build.0 = Debug|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Release|x64.ActiveCfg = Release|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Release|x64.Build.0 = Release|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Release|x86.ActiveCfg = Release|Any CPU
-		{DC1E5421-8FBC-47B2-B303-D308A465BD97}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
