@@ -22,7 +22,7 @@ To run the code, ensure you have the following installed:
    cd fea-csharp
    ```
 
-2. Open the solution file (`FEA.sln`) in your preferred IDE.
+2. Open the solution file (`BettaFEA.sln`) in your preferred IDE.
 
 3. Navigate to the `Program.cs` file under the project `BettaConsoleUI`. It contains a simple test case to help you understand the framework.
 
@@ -305,5 +305,5 @@ This project is in active development, with the following features planned:
 
 ### License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the Creative Commons Attribution-NonCommercial 4.0 International License.
 
