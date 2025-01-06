@@ -1,4 +1,4 @@
-# Finite Element Analysis in C#
+# BettaFEA vesion Alpha 
 
 This repository hosts a C# implementation of FEA as part of an ongiong research conducted by Zeiad Amin at Cornell University.
 
